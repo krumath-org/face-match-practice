@@ -15,7 +15,12 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  --font-sans: "Space Grotesk", "Kantumruy Pro", ui-sans-serif, system-ui, sans-serif;
+  /* Space Grotesk carries Latin only, so the Khmer faces listed after it are what paint
+     Khmer text. Naming real Khmer faces before the generic default matters: the system
+     default sets Khmer roughly 20% wider, which reads as the letters drifting apart. */
+  --font-sans:
+    "Space Grotesk", "Kantumruy Pro", "Noto Sans Khmer", "Khmer OS Battambang", ui-sans-serif,
+    system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -153,9 +158,11 @@
    * Latin, so neutralise them wholesale while Khmer is active instead of dropping the
    * class from each component. `!important` is load-bearing here: the utilities layer is
    * emitted after this one, and a later layer outranks an earlier one regardless of how
-   * specific the selector is.
+   * specific the selector is. Word spacing is pinned for the same reason: the gap between
+   * Khmer words should come from the Khmer face, not a Latin face's space advance.
    */
   html[lang="km"] * {
     letter-spacing: normal !important;
+    word-spacing: normal !important;
   }
 }
