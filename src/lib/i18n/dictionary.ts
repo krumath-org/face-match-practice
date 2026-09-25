@@ -51,7 +51,8 @@ const en = {
   "quiz.question": "Question {number}",
   "quiz.progress": "{accuracy}% · {count} done",
   "quiz.correct": "Correct",
-  "quiz.wrong": "Not quite — the answer was {name}.",
+  "quiz.wrongPickName": "Not quite — the answer was {name}.",
+  "quiz.wrongPickPhoto": "Not quite — that's not {name}.",
   "quiz.next": "Next",
   "quiz.prompt": "Who is this?",
 
@@ -106,7 +107,8 @@ const km: Record<TranslationKey, string> = {
   "quiz.question": "សំណួរទី {number}",
   "quiz.progress": "{accuracy}% · ឆ្លើយបាន {count}",
   "quiz.correct": "ត្រឹមត្រូវ",
-  "quiz.wrong": "មិនទាន់ត្រូវទេ — ចម្លើយគឺ {name}។",
+  "quiz.wrongPickName": "មិនទាន់ត្រូវទេ — ចម្លើយគឺ {name}។",
+  "quiz.wrongPickPhoto": "មិនទាន់ត្រូវទេ — នេះមិនមែន {name} ទេ។",
   "quiz.next": "បន្ទាប់",
   "quiz.prompt": "នេះជាអ្នកណា?",
 

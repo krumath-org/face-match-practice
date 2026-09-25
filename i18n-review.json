@@ -183,10 +183,15 @@
       "en": "Correct",
       "km": "ត្រឹមត្រូវ"
     },
-    "quiz.wrong": {
-      "where": "Feedback after a wrong answer. {name} is the correct answer, shown in bold at the end of the sentence.",
+    "quiz.wrongPickName": {
+      "where": "Feedback after a wrong answer when a photo was shown and the user had to pick the name. {name} is the correct answer, shown in bold at the end of the sentence.",
       "en": "Not quite — the answer was {name}.",
       "km": "មិនទាន់ត្រូវទេ — ចម្លើយគឺ {name}។"
+    },
+    "quiz.wrongPickPhoto": {
+      "where": "Feedback after a wrong answer when a name was shown as the prompt and the user had to pick the photo. {name} is already on screen, so this describes the face they mis-picked instead of restating the answer.",
+      "en": "Not quite — that's not {name}.",
+      "km": "មិនទាន់ត្រូវទេ — នេះមិនមែន {name} ទេ។"
     },
     "quiz.next": {
       "where": "Button for the next question.",

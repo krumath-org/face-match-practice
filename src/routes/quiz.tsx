@@ -207,7 +207,9 @@ function QuizPage() {
               {wasCorrect ? (
                 <span className="font-semibold text-accent">{t("quiz.correct")}</span>
               ) : (
-                t("quiz.wrong", { name: question.answer.name })
+                t(question.mode === "photo" ? "quiz.wrongPickName" : "quiz.wrongPickPhoto", {
+                  name: question.answer.name,
+                })
               )}
             </p>
             <button
