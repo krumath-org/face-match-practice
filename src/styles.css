@@ -117,6 +117,13 @@
     border-color: var(--color-border);
   }
 
+  /* Tailwind v4 dropped v3's `button { cursor: pointer }` preflight, so buttons
+     fall back to the browser default. Restore the hand for interactive controls. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
