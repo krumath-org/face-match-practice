@@ -1,0 +1,3 @@
+# Normalize line endings: store LF in the repo and check out LF everywhere,
+# overriding core.autocrlf so Prettier/ESLint stay clean on Windows.
+* text=auto eol=lf

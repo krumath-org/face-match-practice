@@ -1,0 +1,126 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Light, cool, glassy. Portraits carry the visual weight. All colors use oklch. */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-mist: var(--mist);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-danger: var(--danger);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-glow-blue: var(--glow-blue);
+  --color-glow-periwinkle: var(--glow-periwinkle);
+}
+
+:root {
+  --radius: 1.25rem;
+
+  --ink: oklch(0.256 0.027 262);
+  --mist: oklch(0.951 0.008 260);
+
+  --background: oklch(0.951 0.008 260);
+  --foreground: oklch(0.256 0.027 262);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.256 0.027 262);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.256 0.027 262);
+  --primary: oklch(0.256 0.027 262);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.975 0.005 260);
+  --secondary-foreground: oklch(0.256 0.027 262);
+  --muted: oklch(0.93 0.008 260);
+  --muted-foreground: oklch(0.55 0.02 262);
+  /* Brand blue, matching public/favicon.svg (#2563eb) */
+  --accent: oklch(0.546 0.215 262.9);
+  --accent-foreground: oklch(1 0 0);
+  --danger: oklch(0.617 0.196 22);
+  --destructive: oklch(0.617 0.196 22);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.256 0.027 262 / 8%);
+  --input: oklch(0.256 0.027 262 / 12%);
+  --ring: oklch(0.546 0.215 262.9);
+  --glow-blue: oklch(0.72 0.13 264);
+  --glow-periwinkle: oklch(0.82 0.07 270);
+
+  --shadow-accent: 0 14px 30px -12px oklch(0.546 0.215 262.9 / 0.7);
+  --shadow-lift: 0 18px 40px -18px oklch(0.256 0.027 262 / 0.35);
+  --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@utility glass {
+  background: oklch(1 0 0 / 0.55);
+  backdrop-filter: blur(18px) saturate(1.3);
+}
+
+@utility lift {
+  transition:
+    transform 0.25s var(--ease-out-soft),
+    box-shadow 0.25s var(--ease-out-soft);
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+@utility shadow-accent-glow {
+  box-shadow: var(--shadow-accent);
+}
+
+@utility fade-up {
+  animation: fade-up 0.45s ease both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}
