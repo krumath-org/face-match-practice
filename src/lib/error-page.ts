@@ -1,3 +1,6 @@
+// The app can be mounted at a subpath, so "home" is wherever it is being served.
+const homeHref = import.meta.env.BASE_URL;
+
 export function renderErrorPage(): string {
   return `<!doctype html>
 <html lang="en">
@@ -22,7 +25,7 @@ export function renderErrorPage(): string {
       <p>Something went wrong on our end. You can try refreshing or head back home.</p>
       <div class="actions">
         <button class="primary" onclick="location.reload()">Try again</button>
-        <a class="secondary" href="/">Go home</a>
+        <a class="secondary" href="${homeHref}">Go home</a>
       </div>
     </div>
   </body>

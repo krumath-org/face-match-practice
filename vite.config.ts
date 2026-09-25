@@ -8,7 +8,22 @@ import tsConfigPaths from "vite-tsconfig-paths";
 
 const srcDir = fileURLToPath(new URL("./src", import.meta.url));
 
+/**
+ * KruMath serves this app from a subpath, so the Vite base (every asset URL) and
+ * the router basepath have to agree. Run `APP_BASE_PATH=/ npm run dev` to work at
+ * the root instead.
+ */
+function normalizeBasePath(value: string): string {
+  const trimmed = value.trim().replace(/\/+$/, "");
+  if (trimmed === "") return "/";
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
+const basePath = normalizeBasePath(process.env["APP_BASE_PATH"] ?? "/face-match-memorization");
+const viteBase = basePath === "/" ? "/" : `${basePath}/`;
+
 export default defineConfig(({ command }) => ({
+  base: viteBase,
   css: { transformer: "lightningcss" },
   resolve: {
     alias: { "@": srcDir },
@@ -34,6 +49,7 @@ export default defineConfig(({ command }) => ({
     tailwindcss(),
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackStart({
+      router: { basepath: basePath },
       server: { entry: "server" },
       importProtection: {
         behavior: "error",
@@ -49,6 +65,9 @@ export default defineConfig(({ command }) => ({
       ? [
           nitro({
             preset: "cloudflare-module",
+            // Nitro needs the mount point too: it nests the client build under the
+            // base so /face-match-memorization/assets/* resolves to a real file.
+            baseURL: viteBase,
             // Cloudflare turns nodejs_compat on by itself for this compat date.
             cloudflare: { nodeCompat: false },
           }),

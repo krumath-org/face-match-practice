@@ -9,7 +9,12 @@ import {
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+import { TooltipProvider } from "@/components/ui/tooltip";
+
 import appCss from "../styles.css?url";
+
+// Public assets sit under the app's mount point, so links to them can't be absolute.
+const baseUrl = import.meta.env.BASE_URL;
 
 function NotFoundComponent() {
   return (
@@ -57,7 +62,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             Try again
           </button>
           <a
-            href="/"
+            href={baseUrl}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             Go home
@@ -91,9 +96,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
-      { rel: "icon", href: "/favicon.ico", sizes: "any", type: "image/x-icon" },
-      { rel: "apple-touch-icon", href: "/favicon.png" },
+      { rel: "icon", href: `${baseUrl}favicon.svg`, type: "image/svg+xml" },
+      { rel: "icon", href: `${baseUrl}favicon.ico`, sizes: "any", type: "image/x-icon" },
+      { rel: "apple-touch-icon", href: `${baseUrl}favicon.png` },
     ],
   }),
   shellComponent: RootShell,
@@ -121,7 +126,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <TooltipProvider delayDuration={200} skipDelayDuration={300}>
+        <Outlet />
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

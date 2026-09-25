@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "kruface",
+  // Pinned rather than left to Nitro's default, which is the build machine's local
+  // date and gets rejected by Cloudflare as "in the future" ahead of UTC.
+  "compatibility_date": "2026-09-25",
+  "routes": [
+    {
+      "pattern": "krumath.com/face-match-memorization",
+      "zone_name": "krumath.com"
+    },
+    {
+      "pattern": "krumath.com/face-match-memorization/*",
+      "zone_name": "krumath.com"
+    }
+  ]
+}
