@@ -1,77 +1,159 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import { useAuth } from "@/lib/auth/context";
 import {
-  loadPeople,
-  loadStats,
-  newId,
-  savePeople,
-  saveStats,
+  clearLegacyStorage,
+  deletePersonRow,
+  fetchPeople,
+  insertPerson,
+  readLegacyPeople,
+  resetCounts,
+  summarise,
+  updateAnswerCounts,
+  uploadPersonPhoto,
   type Person,
-  type Stats,
 } from "@/lib/people-store";
 
+/** Records that this browser has already handed its old data to a KruMath account. */
+const IMPORT_MARKER_KEY = "kruface.legacy-import.v1";
+
+function alreadyImported(userId: string): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    return window.localStorage.getItem(IMPORT_MARKER_KEY) === userId;
+  } catch {
+    return true;
+  }
+}
+
+function markImported(userId: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(IMPORT_MARKER_KEY, userId);
+  } catch {
+    // Worst case the next visit re-runs the import, which is idempotent per file.
+  }
+}
+
+function describe(error: unknown): string {
+  if (error && typeof error === "object" && "message" in error) return String(error["message"]);
+  return String(error);
+}
+
 export function usePeople() {
+  const { userId } = useAuth();
   const [people, setPeople] = useState<Person[]>([]);
-  const [stats, setStats] = useState<Stats>({ correct: 0, wrong: 0 });
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Mirrors state so async callbacks never read a stale list.
+  const peopleRef = useRef<Person[]>([]);
+  useEffect(() => {
+    peopleRef.current = people;
+  }, [people]);
 
   useEffect(() => {
-    setPeople(loadPeople());
-    setStats(loadStats());
-    setLoaded(true);
+    if (!userId) return;
+    let cancelled = false;
+
+    void (async () => {
+      setLoaded(false);
+      try {
+        await importLegacyData(userId);
+        if (cancelled) return;
+        setPeople(await fetchPeople());
+        setError(null);
+      } catch (err) {
+        if (!cancelled) setError(describe(err));
+      } finally {
+        if (!cancelled) setLoaded(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  const addPerson = useCallback(
+    async (name: string, photoDataUrl: string) => {
+      if (!userId) return;
+      const photoPath = await uploadPersonPhoto(userId, photoDataUrl);
+      const created = await insertPerson({ userId, name: name.trim(), photoPath });
+      setPeople((prev) => [...prev, created]);
+    },
+    [userId],
+  );
+
+  const deletePerson = useCallback(async (id: string) => {
+    const removed = peopleRef.current.find((person) => person.id === id);
+    if (!removed) return;
+
+    setPeople((prev) => prev.filter((person) => person.id !== id));
+    try {
+      await deletePersonRow(removed);
+    } catch (err) {
+      setPeople((prev) => [...prev, removed]);
+      setError(describe(err));
+    }
   }, []);
 
-  const addPerson = useCallback((name: string, photo: string) => {
-    setPeople((prev) => {
-      const next = [...prev, { id: newId(), name: name.trim(), photo, correct: 0, wrong: 0 }];
-      savePeople(next);
-      return next;
-    });
+  const recordAnswer = useCallback(async (personId: string, wasCorrect: boolean) => {
+    const current = peopleRef.current.find((person) => person.id === personId);
+    if (!current) return;
+
+    const updated: Person = {
+      ...current,
+      correct: current.correct + (wasCorrect ? 1 : 0),
+      wrong: current.wrong + (wasCorrect ? 0 : 1),
+    };
+    setPeople((prev) => prev.map((person) => (person.id === personId ? updated : person)));
+
+    try {
+      await updateAnswerCounts(updated);
+    } catch (err) {
+      // The answer stays on screen; the count simply will not survive a reload.
+      console.error("Could not save the answer:", err);
+    }
   }, []);
 
-  const deletePerson = useCallback((id: string) => {
-    setPeople((prev) => {
-      const next = prev.filter((p) => p.id !== id);
-      savePeople(next);
-      return next;
-    });
+  const resetProgress = useCallback(async () => {
+    const snapshot = peopleRef.current;
+    setPeople(snapshot.map((person) => ({ ...person, correct: 0, wrong: 0 })));
+    try {
+      await resetCounts();
+    } catch (err) {
+      setPeople(snapshot);
+      setError(describe(err));
+    }
   }, []);
 
-  const recordAnswer = useCallback((personId: string, wasCorrect: boolean) => {
-    setPeople((prev) => {
-      const next = prev.map((p) =>
-        p.id === personId
-          ? {
-              ...p,
-              correct: p.correct + (wasCorrect ? 1 : 0),
-              wrong: p.wrong + (wasCorrect ? 0 : 1),
-            }
-          : p,
-      );
-      savePeople(next);
-      return next;
-    });
-    setStats((prev) => {
-      const next = {
-        correct: prev.correct + (wasCorrect ? 1 : 0),
-        wrong: prev.wrong + (wasCorrect ? 0 : 1),
-      };
-      saveStats(next);
-      return next;
-    });
-  }, []);
+  const stats = useMemo(() => summarise(people), [people]);
 
-  const resetProgress = useCallback(() => {
-    setPeople((prev) => {
-      const next = prev.map((p) => ({ ...p, correct: 0, wrong: 0 }));
-      savePeople(next);
-      return next;
-    });
-    setStats(() => {
-      const next = { correct: 0, wrong: 0 };
-      saveStats(next);
-      return next;
-    });
-  }, []);
+  return { people, stats, loaded, error, addPerson, deletePerson, recordAnswer, resetProgress };
+}
 
-  return { people, stats, loaded, addPerson, deletePerson, recordAnswer, resetProgress };
+/**
+ * Move anything the previous localStorage version left behind into the signed-in
+ * account, then clear it. Runs at most once per account per browser.
+ */
+async function importLegacyData(userId: string): Promise<void> {
+  if (alreadyImported(userId)) return;
+
+  const legacy = readLegacyPeople();
+  for (const entry of legacy) {
+    try {
+      const photoPath = await uploadPersonPhoto(userId, entry.photo);
+      const created = await insertPerson({ userId, name: entry.name, photoPath });
+      if (entry.correct || entry.wrong) {
+        await updateAnswerCounts({ ...created, correct: entry.correct, wrong: entry.wrong });
+      }
+    } catch (err) {
+      // Skip the one that failed rather than abandoning the rest.
+      console.error("Could not import a stored face:", err);
+    }
+  }
+
+  clearLegacyStorage();
+  markImported(userId);
 }

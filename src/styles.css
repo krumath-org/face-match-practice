@@ -15,7 +15,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Space Grotesk", "Kantumruy Pro", ui-sans-serif, system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -129,5 +129,33 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+
+  /**
+   * Khmer sets optically smaller and denser than Latin at the same size, so the whole
+   * scale is nudged up while Khmer is active. `html` carries the locale (set by the
+   * LocaleProvider), and every Tailwind size is rem-based, so this one declaration lifts
+   * text, spacing, and controls together instead of patching sizes per component.
+   */
+  html[lang="km"] {
+    font-size: 112.5%;
+  }
+
+  /* Khmer stacks fewer glyphs per em, so give it a touch more breathing room. */
+  html[lang="km"] body {
+    line-height: 1.75;
+  }
+
+  /**
+   * Khmer is an abugida, not an alphabet: the glyphs of one syllable form a single
+   * cluster, so spacing them apart rips coeng (subscript) consonants and vowel signs
+   * away from their base character. Every `tracking-*` utility in the app was chosen for
+   * Latin, so neutralise them wholesale while Khmer is active instead of dropping the
+   * class from each component. `!important` is load-bearing here: the utilities layer is
+   * emitted after this one, and a later layer outranks an earlier one regardless of how
+   * specific the selector is.
+   */
+  html[lang="km"] * {
+    letter-spacing: normal !important;
   }
 }

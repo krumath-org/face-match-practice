@@ -3,6 +3,7 @@ import { Play, Users } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
 import { GlowBackground } from "@/components/GlowBackground";
 import { usePeople } from "@/hooks/use-people";
+import { useTranslation } from "@/lib/i18n/context";
 import { accuracy } from "@/lib/people-store";
 import { MIN_PEOPLE } from "@/lib/quiz";
 import heroPortrait from "@/assets/hero-portrait.jpg";
@@ -13,12 +14,14 @@ export const Route = createFileRoute("/")({
       { title: "KruFace — Practice names and faces" },
       {
         name: "description",
-        content: "See a face, pick the name. A quiet drill for the people you keep mixing up.",
+        content:
+          "Good with faces but keep forgetting names? Practice until you never forget a name again.",
       },
       { property: "og:title", content: "KruFace — Practice names and faces" },
       {
         property: "og:description",
-        content: "See a face, pick the name. A quiet drill for the people you keep mixing up.",
+        content:
+          "Good with faces but keep forgetting names? Practice until you never forget a name again.",
       },
     ],
   }),
@@ -27,8 +30,10 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { people, stats, loaded } = usePeople();
+  const t = useTranslation();
   const acc = accuracy(stats);
   const ready = people.length >= MIN_PEOPLE;
+  const remaining = Math.max(0, MIN_PEOPLE - people.length);
   const latest = people[people.length - 1];
 
   return (
@@ -43,19 +48,19 @@ function Home() {
               <span className={`size-2 rounded-full ${ready ? "bg-accent" : "bg-foreground/25"}`} />
               <span className="text-xs font-medium uppercase tracking-[0.14em] text-foreground/60">
                 {!loaded
-                  ? "Loading"
+                  ? t("home.status.loading")
                   : ready
-                    ? "Ready to practice"
-                    : `${Math.max(0, MIN_PEOPLE - people.length)} more to start`}
+                    ? t("home.status.ready")
+                    : t("home.status.needMore", { count: remaining })}
               </span>
             </div>
 
             <h1 className="max-w-[24ch] text-4xl font-semibold leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-6xl">
-              See the face. Name the person.
+              {t("home.title")}
             </h1>
 
             <p className="max-w-[42ch] text-sm text-foreground/60 text-pretty sm:text-base">
-              A quiet drill for the faces you keep mixing up. One portrait at a time.
+              {t("home.subtitle")}
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
@@ -65,7 +70,7 @@ function Home() {
                   className="shadow-accent-glow inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-accent-foreground ring-1 ring-accent/40"
                 >
                   <Play className="size-4" />
-                  Start practice
+                  {t("home.start")}
                 </Link>
               ) : (
                 <Link
@@ -73,14 +78,14 @@ function Home() {
                   className="shadow-accent-glow inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-accent-foreground ring-1 ring-accent/40"
                 >
                   <Users className="size-4" />
-                  Add people
+                  {t("home.addPeople")}
                 </Link>
               )}
 
               <div className="glass flex items-center gap-3 rounded-full px-4 py-2.5 ring-1 ring-border">
                 <span className="text-sm font-semibold">{acc === null ? "—" : `${acc}%`}</span>
                 <span className="h-4 w-px bg-border" />
-                <span className="text-sm text-foreground/55">accuracy</span>
+                <span className="text-sm text-foreground/55">{t("home.accuracy")}</span>
                 <span className="h-4 w-px bg-border" />
                 <span className="text-sm text-foreground/55">
                   {stats.correct} / {stats.correct + stats.wrong}

@@ -1,0 +1,207 @@
+{
+  "_about": "APPROVED EN/KM strings for the KruFace tool. This is the reviewed source of truth; the applied copy lives in src/lib/i18n/dictionary.ts. Values here were approved by the project owner.",
+  "_placeholders": {
+    "{count}": "a number (people/faces remaining or counted)",
+    "{name}": "a person's name, typed by the user",
+    "{number}": "the question number, starting at 1",
+    "{accuracy}": "a whole-number percentage, e.g. 82"
+  },
+  "_placeholders_km_note": "DECIDED: Khmer mode uses Western digits for every runtime number ({count}, {number}, {accuracy}) and for the raw counters rendered outside this file. No Khmer-numeral conversion happens at the substitution point.",
+  "_do_not_translate": [
+    "KruMath (brand, in every toolbar label)",
+    "KruFace (brand, app name)",
+    "GitHub (brand)"
+  ],
+  "strings": {
+    "auth.checking": {
+      "where": "Full-screen loading state while the account is verified. Shown before anything else, so it should feel calm and brief.",
+      "en": "Checking your KruMath account…",
+      "km": "កំពុងពិនិត្យគណនី KruMath…"
+    },
+    "auth.signOut": {
+      "where": "Toolbar sign-out button. Used as both tooltip and screen-reader label, so keep it short.",
+      "en": "Sign out",
+      "km": "ចាកចេញ"
+    },
+    "nav.practice": {
+      "where": "App header tab -> the practice/home screen.",
+      "en": "Practice",
+      "km": "អនុវត្ត"
+    },
+    "nav.people": {
+      "where": "App header tab -> the list of people.",
+      "en": "People",
+      "km": "មនុស្ស"
+    },
+    "nav.language": {
+      "where": "Screen-reader label for the EN/KM button group. Never seen visually.",
+      "en": "Language",
+      "km": "ភាសា"
+    },
+    "toolbar.home": {
+      "where": "Toolbar tooltip -> krumath.com/home. Purely an icon, so this text is the only description users get.",
+      "en": "KruMath home",
+      "km": "ទំព័រដើម KruMath"
+    },
+    "toolbar.github": {
+      "where": "Toolbar tooltip -> the GitHub repository, opens in a new tab.",
+      "en": "Source on GitHub",
+      "km": "កូដនៅលើ GitHub"
+    },
+    "toolbar.pricing": {
+      "where": "Toolbar tooltip -> krumath.com/pricing. Playful coffee wording; the link still points at the pricing page.",
+      "en": "Pay me a coffee!",
+      "km": "ទិញកាហ្វេឱ្យខ្ញុំមួយកែវហេ៎?"
+    },
+    "home.status.loading": {
+      "where": "Small status pill on the home screen while data loads.",
+      "en": "Loading",
+      "km": "កំពុងផ្ទុក…"
+    },
+    "home.status.ready": {
+      "where": "Status pill once there are enough faces to practise.",
+      "en": "Ready to practice",
+      "km": "រួចរាល់ក្នុងការអនុវត្ត"
+    },
+    "home.status.needMore": {
+      "where": "Status pill when there are not yet 4 faces. {count} is how many more are needed.",
+      "en": "{count} more to start",
+      "km": "ត្រូវការ {count} ទៀតដើម្បីចាប់ផ្ដើម"
+    },
+    "home.title": {
+      "where": "The main headline. Currently two short parallel phrases for rhythm.",
+      "en": "See the face. Remember the name.",
+      "km": "មើលមុខ ចាំឈ្មោះ"
+    },
+    "home.subtitle": {
+      "where": "One- or two-sentence explanation under the headline. Khmer leads with the relatable problem (good with faces, bad with names) then the invitation.",
+      "en": "Good with faces but keep forgetting names? Come on — practice until you never forget a name again.",
+      "km": "ពូកែចាំមុខ តែភ្លេចឈ្មោះមែន? តស់! ហ្វឹកហាត់មើលមុខ ចាំឈ្មោះ កុំឱ្យភ្លេចឈ្មោះគេទៀត។"
+    },
+    "home.start": {
+      "where": "Primary button -> the quiz. Only shown when there are enough faces.",
+      "en": "Start practice",
+      "km": "ចាប់ផ្ដើមអនុវត្ត"
+    },
+    "home.addPeople": {
+      "where": "Primary button -> the add-person screen. Shown instead of `home.start` when there are not enough faces.",
+      "en": "Add people",
+      "km": "បន្ថែមមនុស្ស"
+    },
+    "home.accuracy": {
+      "where": "Label inside the stats pill, sitting next to a percentage like `82%`. Lowercase by design.",
+      "en": "accuracy",
+      "km": "ភាពត្រឹមត្រូវ"
+    },
+    "people.title": {
+      "where": "Heading of the people screen.",
+      "en": "Your people",
+      "km": "បញ្ជីមនុស្សរបស់អ្នក"
+    },
+    "people.count": {
+      "where": "Sub-line under the heading. {count} is the number of saved faces, so this must read correctly at 0, 1 and many.",
+      "en": "{count} faces in your collection",
+      "km": "មាន {count} នាក់ក្នុងបញ្ជីរបស់អ្នក"
+    },
+    "people.add": {
+      "where": "Button -> add-person screen. Also reused inside the quiz when there are too few faces.",
+      "en": "Add person",
+      "km": "បន្ថែមមនុស្ស"
+    },
+    "people.empty": {
+      "where": "Empty state: the whole screen becomes one big button with this label.",
+      "en": "Add your first face",
+      "km": "បន្ថែមមនុស្សដំបូងរបស់អ្នក"
+    },
+    "people.remove": {
+      "where": "Tooltip on each card's X button. {name} is the person's name, so word order matters.",
+      "en": "Remove {name}",
+      "km": "លុប {name}"
+    },
+    "add.back": {
+      "where": "Button -> back to the people list.",
+      "en": "Back",
+      "km": "ត្រឡប់ក្រោយ"
+    },
+    "add.save": {
+      "where": "Button that uploads the photo and saves the person.",
+      "en": "Save",
+      "km": "រក្សាទុក"
+    },
+    "add.saving": {
+      "where": "Same button while the upload is in flight. Must read as an in-progress state.",
+      "en": "Saving…",
+      "km": "កំពុងរក្សាទុក…"
+    },
+    "add.changePhoto": {
+      "where": "Tooltip once a photo is chosen, inviting a replacement.",
+      "en": "Change photo",
+      "km": "ប្ដូររូបថត"
+    },
+    "add.choosePhoto": {
+      "where": "Tooltip before any photo is chosen.",
+      "en": "Choose a photo",
+      "km": "ជ្រើសរើសរូបថត"
+    },
+    "add.selectedPortrait": {
+      "where": "Screen-reader description of the chosen image. Never seen visually.",
+      "en": "Selected portrait",
+      "km": "រូបថតដែលបានជ្រើសរើស"
+    },
+    "add.namePlaceholder": {
+      "where": "Name field hint, and the field's screen-reader label.",
+      "en": "Name",
+      "km": "ឈ្មោះ"
+    },
+    "quiz.needMore_one": {
+      "where": "Shown when exactly 1 more face is needed. Kept as a separate key from the plural even though the two Khmer values are now identical: English needs the distinction (\"1 more person\" vs \"3 more people\"), and quiz.tsx chooses the key by count === 1.",
+      "en": "Add 1 more person to practice",
+      "km": "បន្ថែម {count} នាក់ទៀតដើម្បីអនុវត្ត"
+    },
+    "quiz.needMore_other": {
+      "where": "Shown when 2 or 3 more faces are needed. {count} is that number.",
+      "en": "Add {count} more people to practice",
+      "km": "បន្ថែម {count} នាក់ទៀតដើម្បីអនុវត្ត"
+    },
+    "quiz.back": {
+      "where": "Button -> home. Also the screen-reader label on that button.",
+      "en": "Back",
+      "km": "ត្រឡប់ក្រោយ"
+    },
+    "quiz.question": {
+      "where": "Top-right progress text before any answer. {number} starts at 1.",
+      "en": "Question {number}",
+      "km": "សំណួរទី {number}"
+    },
+    "quiz.progress": {
+      "where": "Top-right progress text once answering has begun. {accuracy} is a percentage, {count} is how many answered. The interpunct is part of the design - feel free to change it.",
+      "en": "{accuracy}% · {count} done",
+      "km": "{accuracy}% · ឆ្លើយបាន {count}"
+    },
+    "quiz.correct": {
+      "where": "Feedback after a right answer. Short, and green-coloured.",
+      "en": "Correct",
+      "km": "ត្រឹមត្រូវ"
+    },
+    "quiz.wrong": {
+      "where": "Feedback after a wrong answer. {name} is the correct answer, shown in bold at the end of the sentence.",
+      "en": "Not quite — the answer was {name}.",
+      "km": "មិនទាន់ត្រូវទេ — ចម្លើយគឺ {name}។"
+    },
+    "quiz.next": {
+      "where": "Button for the next question.",
+      "en": "Next",
+      "km": "បន្ទាប់"
+    },
+    "quiz.prompt": {
+      "where": "Screen-reader description of the question portrait, e.g. `Who is this?`. Never seen visually.",
+      "en": "Who is this?",
+      "km": "នេះជាអ្នកណា?"
+    },
+    "error.saveFailed": {
+      "where": "Warning under the Save button when the upload or database write fails. Shown in red.",
+      "en": "Could not save that. Please try again.",
+      "km": "មិនអាចរក្សាទុកបានទេ។ សូមព្យាយាមម្ដងទៀត។"
+    }
+  }
+}

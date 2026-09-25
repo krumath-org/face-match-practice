@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { GlowBackground } from "@/components/GlowBackground";
 import { usePeople } from "@/hooks/use-people";
+import { useTranslation } from "@/lib/i18n/context";
 import { accuracy } from "@/lib/people-store";
 import { buildQuestion, MIN_PEOPLE, type Question } from "@/lib/quiz";
 
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/quiz")({
 
 function QuizPage() {
   const { people, stats, loaded, recordAnswer } = usePeople();
+  const t = useTranslation();
   const [question, setQuestion] = useState<Question | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [round, setRound] = useState(0);
@@ -45,26 +47,26 @@ function QuizPage() {
   const pick = (id: string) => {
     if (picked || !question) return;
     setPicked(id);
-    recordAnswer(question.answer.id, id === question.answer.id);
+    void recordAnswer(question.answer.id, id === question.answer.id);
     setRound((r) => r + 1);
   };
 
   const acc = accuracy(stats);
 
   if (loaded && people.length < MIN_PEOPLE) {
+    const missing = MIN_PEOPLE - people.length;
     return (
       <Shell>
         <section className="fade-up glass grid min-h-0 flex-1 place-items-center gap-4 rounded-[28px] px-6 text-center ring-1 ring-border">
           <span className="text-sm text-foreground/55">
-            Add {MIN_PEOPLE - people.length} more{" "}
-            {MIN_PEOPLE - people.length === 1 ? "person" : "people"} to practice
+            {t(missing === 1 ? "quiz.needMore_one" : "quiz.needMore_other", { count: missing })}
           </span>
           <Link
             to="/people/add"
             className="shadow-accent-glow inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground ring-1 ring-accent/40"
           >
             <Plus className="size-4" />
-            Add person
+            {t("people.add")}
           </Link>
         </section>
       </Shell>
@@ -87,15 +89,17 @@ function QuizPage() {
         <div className="mb-4 grid shrink-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
           <Link
             to="/"
-            aria-label="Back"
+            aria-label={t("quiz.back")}
             className="inline-flex items-center gap-2 rounded-full bg-card/70 px-3.5 py-2 text-sm font-medium text-foreground/70 ring-1 ring-border"
           >
             <ArrowLeft className="size-4" />
-            Back
+            {t("quiz.back")}
           </Link>
           <div className="flex min-w-0 items-center justify-end gap-2">
             <span className="text-xs font-medium uppercase tracking-[0.14em] text-foreground/45">
-              {acc === null ? `Question ${round + 1}` : `${acc}% · ${round} done`}
+              {acc === null
+                ? t("quiz.question", { number: round + 1 })
+                : t("quiz.progress", { accuracy: acc, count: round })}
             </span>
             <div className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-border">
               <div
@@ -114,7 +118,7 @@ function QuizPage() {
                 <img
                   key={question.answer.id}
                   src={question.answer.photo}
-                  alt="Who is this?"
+                  alt={t("quiz.prompt")}
                   className="h-full w-full animate-fade-in object-cover"
                 />
               </div>
@@ -201,12 +205,9 @@ function QuizPage() {
           <div className="mt-4 grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-2xl bg-card/60 px-5 py-3 ring-1 ring-border">
             <p className="min-w-0 text-sm text-foreground/70">
               {wasCorrect ? (
-                <span className="font-semibold text-accent">Correct</span>
+                <span className="font-semibold text-accent">{t("quiz.correct")}</span>
               ) : (
-                <>
-                  Not quite — the answer was{" "}
-                  <span className="font-semibold text-foreground">{question.answer.name}</span>.
-                </>
+                t("quiz.wrong", { name: question.answer.name })
               )}
             </p>
             <button
@@ -214,7 +215,7 @@ function QuizPage() {
               onClick={() => next(question.answer.id)}
               className="shrink-0 rounded-full bg-ink px-4 py-2 text-sm font-medium text-primary-foreground"
             >
-              Next
+              {t("quiz.next")}
             </button>
           </div>
         )}

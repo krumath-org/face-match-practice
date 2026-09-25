@@ -8,13 +8,30 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { createIsomorphicFn } from "@tanstack/react-start";
 
-import { TooltipProvider } from "@/components/ui/tooltip";
-
+import { AuthGate } from "../components/AuthGate";
+import { TooltipProvider } from "../components/ui/tooltip";
+import { AuthProvider, type AuthState } from "../lib/auth/context";
+import type { ServerAuthOutcome } from "../lib/auth/session.server";
+import { LocaleProvider } from "../lib/i18n/context";
 import appCss from "../styles.css?url";
 
 // Public assets sit under the app's mount point, so links to them can't be absolute.
 const baseUrl = import.meta.env.BASE_URL;
+
+/**
+ * The server branch reads the session cookie, so it can only exist in the server bundle.
+ * Declaring the split here rather than guarding a dynamic import with `import.meta.env.SSR`
+ * matters: the guard is a runtime check, while the import graph is walked statically, so a
+ * bare `.server` import is rejected before the guard is ever reached.
+ */
+const resolveRouteAuth = createIsomorphicFn()
+  .server(async (): Promise<ServerAuthOutcome> => {
+    const { resolveServerAuth } = await import("../lib/auth/session.server");
+    return resolveServerAuth();
+  })
+  .client(async (): Promise<ServerAuthOutcome> => ({ status: "unknown" }));
 
 function NotFoundComponent() {
   return (
@@ -83,7 +100,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "KruFace" },
       { property: "og:description", content: "Practice remembering faces and names." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { property: "twitter:card", content: "summary_large_image" },
+      // Private tool: keep it out of search results, including the pre-auth shell.
+      { name: "robots", content: "noindex, nofollow" },
     ],
     links: [
       {
@@ -94,13 +113,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",
+        // Kantumruy Pro is the Khmer face KruMath standardises on; Space Grotesk has no
+        // Khmer glyphs, so the browser falls through to it for Khmer text only.
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap",
       },
       { rel: "icon", href: `${baseUrl}favicon.svg`, type: "image/svg+xml" },
       { rel: "icon", href: `${baseUrl}favicon.ico`, sizes: "any", type: "image/x-icon" },
       { rel: "apple-touch-icon", href: `${baseUrl}favicon.png` },
     ],
   }),
+  // The gate opens here so every route is covered, on the server and in the browser.
+  // Request middleware has already redirected anyone definitively signed out; this only
+  // needs to decide what to render.
+  beforeLoad: async (): Promise<{ auth: AuthState }> => {
+    const outcome = await resolveRouteAuth();
+
+    if (outcome.status === "authenticated") {
+      return { auth: { status: "authenticated", userId: outcome.userId } };
+    }
+    // No cookie, or one the server cannot vouch for: the browser decides, since the
+    // session may live in its own storage rather than a cookie. On the client this is
+    // always "unknown", so a cookie session settles on the first paint instead of
+    // flashing a loading state.
+    return { auth: { status: "pending", userId: null } };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -123,12 +159,19 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { auth } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider delayDuration={200} skipDelayDuration={300}>
-        <Outlet />
-      </TooltipProvider>
+      <LocaleProvider>
+        <AuthProvider initial={auth}>
+          <AuthGate>
+            <TooltipProvider delayDuration={200} skipDelayDuration={300}>
+              <Outlet />
+            </TooltipProvider>
+          </AuthGate>
+        </AuthProvider>
+      </LocaleProvider>
     </QueryClientProvider>
   );
 }

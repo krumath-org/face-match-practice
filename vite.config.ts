@@ -68,8 +68,10 @@ export default defineConfig(({ command }) => ({
             // Nitro needs the mount point too: it nests the client build under the
             // base so /face-match-memorization/assets/* resolves to a real file.
             baseURL: viteBase,
-            // Cloudflare turns nodejs_compat on by itself for this compat date.
-            cloudflare: { nodeCompat: false },
+            // TanStack Start keeps the request in an AsyncLocalStorage so route
+            // `beforeLoad` can read cookies during SSR. That needs nodejs_compat,
+            // which the cloudflare-module preset only emits when this is on.
+            cloudflare: { nodeCompat: true },
           }),
         ]
       : []),

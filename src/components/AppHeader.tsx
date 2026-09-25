@@ -1,22 +1,15 @@
 import { Link } from "@tanstack/react-router";
 
 import { KruMathBar } from "@/components/KruMathBar";
+import { useTranslation } from "@/lib/i18n/context";
 
 export function AppHeader() {
+  const t = useTranslation();
+
   return (
     <div className="shrink-0">
       <KruMathBar />
-      <header className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-4 sm:px-6">
-        <Link to="/" className="flex min-w-0 items-center gap-2.5">
-          <img
-            src={`${import.meta.env.BASE_URL}favicon.svg`}
-            alt=""
-            aria-hidden="true"
-            className="size-8 shrink-0 select-none"
-            draggable={false}
-          />
-          <span className="truncate text-lg font-bold tracking-tight">KruFace</span>
-        </Link>
+      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-end px-5 py-4 sm:px-6">
         <nav className="glass flex items-center gap-1 rounded-full p-1 ring-1 ring-border">
           <Link
             to="/"
@@ -25,7 +18,7 @@ export function AppHeader() {
             inactiveProps={{ className: "text-foreground/55 hover:text-foreground" }}
             className="rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
           >
-            Practice
+            {t("nav.practice")}
           </Link>
           <Link
             to="/people"
@@ -33,7 +26,7 @@ export function AppHeader() {
             inactiveProps={{ className: "text-foreground/55 hover:text-foreground" }}
             className="rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
           >
-            People
+            {t("nav.people")}
           </Link>
         </nav>
       </header>
