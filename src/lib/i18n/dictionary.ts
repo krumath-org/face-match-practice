@@ -13,6 +13,9 @@ const en = {
   "auth.checking": "Checking your KruMath account…",
   "auth.signOut": "Sign out",
 
+  "account.label": "Account",
+  "account.settings": "Account settings",
+
   "nav.practice": "Practice",
   "nav.people": "People",
   "nav.language": "Language",
@@ -68,6 +71,9 @@ export type TranslationKey = keyof typeof en;
 const km: Record<TranslationKey, string> = {
   "auth.checking": "កំពុងពិនិត្យគណនី KruMath…",
   "auth.signOut": "ចាកចេញ",
+
+  "account.label": "គណនី",
+  "account.settings": "ការកំណត់គណនី",
 
   "nav.practice": "អនុវត្ត",
   "nav.people": "មនុស្ស",

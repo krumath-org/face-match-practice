@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser-client";
 import { isAnonymousUser, isSupabaseConfigured } from "@/lib/supabase/config";
-import { buildSignInUrl } from "./config";
+import { buildSignInUrl, KRUMATH_ORIGIN, type UserProfile } from "./config";
 import type { ClientAuthOutcome } from "./session.client";
 
 /**
@@ -15,9 +15,17 @@ const resolveClientAuth = createClientOnlyFn(async (): Promise<ClientAuthOutcome
   return resolve();
 });
 
+/** Same split for the account-menu display fields, which are fetched in the browser. */
+const resolveClientProfile = createClientOnlyFn(async (): Promise<UserProfile | null> => {
+  const { resolveClientProfile: resolve } = await import("./session.client");
+  return resolve();
+});
+
 export type AuthState = {
   status: "pending" | "authenticated" | "unauthenticated";
   userId: string | null;
+  /** Toolbar display fields. Null until resolved in the browser, or when unavailable. */
+  profile: UserProfile | null;
 };
 
 type AuthContextValue = AuthState & {
@@ -33,6 +41,9 @@ const AuthContext = createContext<AuthContextValue | null>(null);
  */
 const DEV_AUTH_BYPASS = import.meta.env.DEV && import.meta.env["VITE_AUTH_BYPASS"] === "1";
 
+/** Placeholder identity so the account menu is workable while the bypass is on. */
+const DEV_PROFILE: UserProfile = { name: "Local dev", email: "dev@localhost" };
+
 function redirectToSignIn() {
   if (typeof window === "undefined") return;
   const returnTo = `${window.location.pathname}${window.location.search}`;
@@ -42,7 +53,11 @@ function redirectToSignIn() {
 export function AuthProvider({ initial, children }: { initial: AuthState; children: ReactNode }) {
   const [state, setState] = useState<AuthState>(
     DEV_AUTH_BYPASS
-      ? { status: "authenticated", userId: "00000000-0000-0000-0000-000000000000" }
+      ? {
+          status: "authenticated",
+          userId: "00000000-0000-0000-0000-000000000000",
+          profile: DEV_PROFILE,
+        }
       : initial,
   );
 
@@ -52,8 +67,10 @@ export function AuthProvider({ initial, children }: { initial: AuthState; childr
     } catch {
       // Even if the call fails there is nothing left to grant access with.
     }
-    setState({ status: "unauthenticated", userId: null });
-    redirectToSignIn();
+    setState({ status: "unauthenticated", userId: null, profile: null });
+    // A deliberate sign-out is not a blocked visit, so land on KruMath home the way
+    // krumath.com's own header does rather than bouncing through the sign-in page.
+    if (typeof window !== "undefined") window.location.assign(`${KRUMATH_ORIGIN}/home`);
   }, []);
 
   // The server could not tell whether we are signed in, so ask the browser.
@@ -64,9 +81,9 @@ export function AuthProvider({ initial, children }: { initial: AuthState; childr
       const outcome = await resolveClientAuth();
       if (cancelled) return;
       if (outcome.status === "authenticated") {
-        setState({ status: "authenticated", userId: outcome.userId });
+        setState({ status: "authenticated", userId: outcome.userId, profile: outcome.profile });
       } else {
-        setState({ status: "unauthenticated", userId: null });
+        setState({ status: "unauthenticated", userId: null, profile: null });
         redirectToSignIn();
       }
     })();
@@ -75,13 +92,30 @@ export function AuthProvider({ initial, children }: { initial: AuthState; childr
     };
   }, [state.status]);
 
+  // The server only vouches for a user id, so the menu's name and avatar are filled in
+  // here. Doing it in the browser also keeps the email out of the SSR payload.
+  useEffect(() => {
+    if (DEV_AUTH_BYPASS || !isSupabaseConfigured()) return;
+    if (state.status !== "authenticated" || state.profile) return;
+
+    let cancelled = false;
+    void (async () => {
+      const profile = await resolveClientProfile();
+      if (cancelled || !profile) return;
+      setState((prev) => (prev.status === "authenticated" ? { ...prev, profile } : prev));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [state.status, state.profile]);
+
   // Keep in step with refreshes, sign-out, and expiry for the rest of the session.
   useEffect(() => {
     if (DEV_AUTH_BYPASS || !isSupabaseConfigured()) return;
     const supabase = getSupabaseBrowserClient();
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        setState({ status: "unauthenticated", userId: null });
+        setState({ status: "unauthenticated", userId: null, profile: null });
         redirectToSignIn();
         return;
       }
@@ -89,9 +123,15 @@ export function AuthProvider({ initial, children }: { initial: AuthState; childr
 
       const user = session?.user;
       if (user && !isAnonymousUser(user)) {
-        setState({ status: "authenticated", userId: user.id });
+        // Keep whatever the toolbar already has so a token refresh does not blink the
+        // avatar; the effect above fills it in when it is still missing.
+        setState((prev) => ({
+          status: "authenticated",
+          userId: user.id,
+          profile: prev.status === "authenticated" ? prev.profile : null,
+        }));
       } else if (!user) {
-        setState({ status: "unauthenticated", userId: null });
+        setState({ status: "unauthenticated", userId: null, profile: null });
         redirectToSignIn();
       }
     });

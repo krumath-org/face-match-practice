@@ -23,6 +23,16 @@
       "en": "Sign out",
       "km": "ចាកចេញ"
     },
+    "account.label": {
+      "where": "Toolbar account menu: the avatar button's screen-reader label, and the fallback display name before the profile loads. km added for the account menu; pending native-speaker review.",
+      "en": "Account",
+      "km": "គណនី"
+    },
+    "account.settings": {
+      "where": "Item in the toolbar account menu -> krumath.com/settings. km added for the account menu; pending native-speaker review.",
+      "en": "Account settings",
+      "km": "ការកំណត់គណនី"
+    },
     "nav.practice": {
       "where": "App header tab -> the practice/home screen.",
       "en": "Practice",

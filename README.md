@@ -43,9 +43,12 @@ Blocked users go to `/sign-in?returnUrl=<attempted path>`. The URL is relative o
 on production it resolves against `krumath.com`, so the user stays on the KruMath origin.
 The param name `returnUrl` matches what KruMath's sign-in page expects.
 
-Sign-out and expiry are handled through `onAuthStateChange`; the toolbar has a sign-out
-button. Only the publishable key is used anywhere — a privileged server-side key must never
-be added to this project.
+Sign-out and expiry are handled through `onAuthStateChange`. The toolbar's account menu shows
+the signed-in name, email, and avatar, links to KruMath's account settings, and signs out;
+sign-out returns to `krumath.com/home`, matching KruMath's own header. Those display fields
+are resolved in the browser rather than during SSR, so the email never travels in the page
+HTML. Only the publishable key is used anywhere — a privileged server-side key must never be
+added to this project.
 
 ## Localization
 
@@ -81,9 +84,10 @@ them. Both the table policy and the storage policies therefore also assert
 ## KruMath integration
 
 A slim bar sits above the app header with the EN/KM switcher, **Home**, the **source on
-GitHub**, **plans and pricing**, and **sign out**. Home and pricing replace the current page;
-the repo opens in a new tab so a half-finished round is kept. The app's own navigation is
-untouched. The bar lives in `src/components/KruMathBar.tsx`.
+GitHub**, **plans and pricing**, and an **account menu** (avatar, name, email, account
+settings, sign out). Home and pricing replace the current page; the repo opens in a new tab
+so a half-finished round is kept. The app's own navigation is untouched. The bar lives in
+`src/components/KruMathBar.tsx`.
 
 Because the app is mounted on a subpath rather than a whole domain, the mount point has to
 be declared in two places:

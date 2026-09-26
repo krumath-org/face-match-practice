@@ -129,13 +129,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     const outcome = await resolveRouteAuth();
 
     if (outcome.status === "authenticated") {
-      return { auth: { status: "authenticated", userId: outcome.userId } };
+      // Only the id is vouched for here; the toolbar's name and avatar are filled in
+      // client-side so the email never lands in the SSR payload.
+      return {
+        auth: { status: "authenticated", userId: outcome.userId, profile: null },
+      };
     }
     // No cookie, or one the server cannot vouch for: the browser decides, since the
     // session may live in its own storage rather than a cookie. On the client this is
     // always "unknown", so a cookie session settles on the first paint instead of
     // flashing a loading state.
-    return { auth: { status: "pending", userId: null } };
+    return { auth: { status: "pending", userId: null, profile: null } };
   },
   shellComponent: RootShell,
   component: RootComponent,

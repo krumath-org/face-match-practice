@@ -1,10 +1,27 @@
 import { Link } from "@tanstack/react-router";
-import { Github, HeartHandshake, Home, LogOut, type LucideIcon } from "lucide-react";
+import {
+  Github,
+  HeartHandshake,
+  Home,
+  LogOut,
+  Settings,
+  User,
+  type LucideIcon,
+} from "lucide-react";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/lib/auth/context";
 import { KRUMATH_ORIGIN } from "@/lib/auth/config";
-import { useI18n } from "@/lib/i18n/context";
+import { useI18n, useTranslation } from "@/lib/i18n/context";
 import { LOCALE_LABELS, LOCALES } from "@/lib/i18n/dictionary";
 
 const PROJECT_REPO = "https://github.com/sokna492-km/face-match-practice";
@@ -14,12 +31,12 @@ const ITEM_CLASS =
 
 /**
  * Slim bar that carries the app's brand (mark + wordmark) and the way back to KruMath:
- * language, the site home, the source repo, pricing, and sign-out. Home and pricing
- * replace the current page; the repo opens in a new tab so a half-finished round is kept.
+ * language, the site home, the source repo, pricing, and the signed-in account. Home and
+ * pricing replace the current page; the repo opens in a new tab so a half-finished round
+ * is kept.
  */
 export function KruMathBar() {
   const { locale, setLocale, t } = useI18n();
-  const { signOut } = useAuth();
 
   return (
     <div className="relative z-10 shrink-0 border-b border-border bg-card/60 backdrop-blur">
@@ -64,19 +81,7 @@ export function KruMathBar() {
               label={t("toolbar.pricing")}
               icon={HeartHandshake}
             />
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  aria-label={t("auth.signOut")}
-                  onClick={() => void signOut()}
-                  className={ITEM_CLASS}
-                >
-                  <LogOut className="size-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">{t("auth.signOut")}</TooltipContent>
-            </Tooltip>
+            <AccountMenu />
           </nav>
         </div>
       </div>
@@ -109,5 +114,52 @@ function BarLink({
       </TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
     </Tooltip>
+  );
+}
+
+/**
+ * The signed-in account, mirroring krumath.com's own header: an avatar that opens a menu
+ * with account settings and sign-out, rather than a bare sign-out icon. The name, email,
+ * and avatar are resolved in the browser, so they may be briefly absent on first paint.
+ */
+function AccountMenu() {
+  const { profile, signOut } = useAuth();
+  const t = useTranslation();
+
+  const name = profile?.name ?? profile?.email;
+  const initial = name?.trim().charAt(0).toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button type="button" aria-label={t("account.label")} className={ITEM_CLASS}>
+          <Avatar className="size-6">
+            {profile?.avatarUrl ? <AvatarImage src={profile.avatarUrl} alt="" /> : null}
+            <AvatarFallback className="bg-ink text-[11px] font-semibold text-primary-foreground">
+              {initial ?? <User className="size-4" />}
+            </AvatarFallback>
+          </Avatar>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="font-normal">
+          <p className="truncate text-sm font-semibold">{name ?? t("account.label")}</p>
+          {profile?.email ? (
+            <p className="truncate text-xs text-muted-foreground">{profile.email}</p>
+          ) : null}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <a href={`${KRUMATH_ORIGIN}/settings`} className="cursor-pointer">
+            <Settings className="size-4" />
+            {t("account.settings")}
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => void signOut()} className="cursor-pointer">
+          <LogOut className="size-4" />
+          {t("auth.signOut")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

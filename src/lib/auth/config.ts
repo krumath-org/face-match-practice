@@ -18,3 +18,14 @@ export function buildSignInUrl(returnTo: string): string {
   const path = returnTo.startsWith("/") ? returnTo : `/${returnTo}`;
   return `/sign-in?returnUrl=${encodeURIComponent(path)}`;
 }
+
+/**
+ * The slice of the KruMath account the toolbar renders: enough for an avatar and a name
+ * in the account menu, and nothing more. Every field is optional because the server only
+ * ever vouches for a user id, so the menu has to cope with an unfilled profile.
+ */
+export type UserProfile = {
+  email?: string | undefined;
+  name?: string | undefined;
+  avatarUrl?: string | undefined;
+};
