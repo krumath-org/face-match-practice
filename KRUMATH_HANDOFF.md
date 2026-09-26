@@ -8,7 +8,7 @@ KruMath side; nothing in this repository changes KruMath's auth or sign-in.
 ## Prompt
 
 > A KruMath tool is now deployed at `krumath.com/face-match-memorization` (its own repo:
-> `sokna492-km/face-match-practice`, its own Cloudflare Worker `kruface`). It reuses the
+> `krumath-org/face-match-practice`, its own Cloudflare Worker `kruface`). It reuses the
 > existing Supabase project and auth, and it is a **hard gate**: the whole tool requires a
 > signed-in, non-anonymous account.
 >

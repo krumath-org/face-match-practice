@@ -24,7 +24,7 @@ import { KRUMATH_ORIGIN } from "@/lib/auth/config";
 import { useI18n, useTranslation } from "@/lib/i18n/context";
 import { LOCALE_LABELS, LOCALES } from "@/lib/i18n/dictionary";
 
-const PROJECT_REPO = "https://github.com/sokna492-km/face-match-practice";
+const PROJECT_REPO = "https://github.com/krumath-org/face-match-practice";
 
 const ITEM_CLASS =
   "grid size-8 place-items-center rounded-full text-foreground/45 transition-colors hover:bg-ink hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";
