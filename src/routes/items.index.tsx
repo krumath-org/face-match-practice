@@ -32,41 +32,33 @@ function ItemsPage() {
       <GlowBackground />
       <AppHeader />
 
-      <main className="relative z-10 mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col px-5 pb-5 sm:px-6">
-        {collections.length > 0 && (
-          <div className="mb-4 shrink-0">
-            <CollectionSwitcher
-              collections={collections}
-              selected={selectedCollection}
-              onSelect={selectCollection}
-            />
-          </div>
-        )}
+      <main className="relative z-10 mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col px-3 pb-3 sm:px-6 lg:px-5 lg:pb-5">
+        {/* One tools row only — title · deck · add aligned horizontally */}
+        <div className="mb-2 flex shrink-0 items-center gap-2 lg:mb-3 lg:gap-3">
+          <h2 className="shrink-0 text-lg font-semibold tracking-tight lg:text-xl">
+            {t("items.title")}
+          </h2>
+          {collections.length > 0 && (
+            <div className="min-w-0 flex-1">
+              <CollectionSwitcher
+                collections={collections}
+                selected={selectedCollection}
+                onSelect={selectCollection}
+              />
+            </div>
+          )}
+          {collections.length === 0 && <div className="min-w-0 flex-1" />}
+          <Link
+            to="/items/add"
+            aria-label={t("items.add")}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-ink px-3 py-2 text-sm font-medium text-primary-foreground ring-1 ring-border lg:gap-2 lg:px-4"
+          >
+            <Plus className="size-4" />
+            <span className="hidden sm:inline">{t("items.add")}</span>
+          </Link>
+        </div>
 
         <section className="fade-up flex min-h-0 flex-1 flex-col">
-          <div className="mb-4 grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
-            <div className="min-w-0">
-              <h2 className="truncate text-2xl font-semibold tracking-tight">{t("items.title")}</h2>
-              <p className="mt-1 truncate text-sm text-foreground/50">
-                {!loaded
-                  ? "—"
-                  : selectedCollection === null
-                    ? ""
-                    : t("items.count", {
-                        count: visibleItems.length,
-                        collection: selectedCollection,
-                      })}
-              </p>
-            </div>
-            <Link
-              to="/items/add"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-medium text-primary-foreground ring-1 ring-border"
-            >
-              <Plus className="size-4" />
-              {t("items.add")}
-            </Link>
-          </div>
-
           {loaded && visibleItems.length === 0 ? (
             <Link
               to="/items/add"
@@ -78,7 +70,7 @@ function ItemsPage() {
               <p className="text-sm text-foreground/55">{t("items.empty")}</p>
             </Link>
           ) : (
-            <div className="grid min-h-0 flex-1 auto-rows-fr grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid min-h-0 flex-1 content-start grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
               {visibleItems.map((item) => (
                 <ItemCard key={item.id} item={item} onDelete={deleteItem} />
               ))}

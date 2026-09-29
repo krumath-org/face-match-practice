@@ -85,23 +85,23 @@ function QuizPage() {
 
   return (
     <Shell>
-      <section className="fade-up glass flex min-h-0 flex-1 flex-col rounded-[28px] p-5 ring-1 ring-border sm:p-6">
-        <div className="mb-4 grid shrink-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
+      <section className="fade-up glass flex min-h-0 flex-1 flex-col rounded-[28px] p-3 ring-1 ring-border lg:p-6">
+        <div className="mb-3 grid shrink-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 lg:mb-4 lg:gap-4">
           <Link
             to="/"
             aria-label={t("quiz.back")}
-            className="inline-flex items-center gap-2 rounded-full bg-card/70 px-3.5 py-2 text-sm font-medium text-foreground/70 ring-1 ring-border"
+            className="inline-flex items-center gap-2 rounded-full bg-card/70 px-2.5 py-2 text-sm font-medium text-foreground/70 ring-1 ring-border lg:px-3.5"
           >
             <ArrowLeft className="size-4" />
-            {t("quiz.back")}
+            <span className="hidden sm:inline">{t("quiz.back")}</span>
           </Link>
           <div className="flex min-w-0 items-center justify-end gap-2">
-            <span className="text-xs font-medium uppercase tracking-[0.14em] text-foreground/45">
+            <span className="truncate text-[10px] font-medium uppercase tracking-[0.12em] text-foreground/45 lg:text-xs lg:tracking-[0.14em]">
               {acc === null
                 ? t("quiz.question", { number: round + 1 })
                 : t("quiz.progress", { accuracy: acc, count: round })}
             </span>
-            <div className="h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-border">
+            <div className="h-1 w-16 shrink-0 overflow-hidden rounded-full bg-border lg:h-1.5 lg:w-24">
               <div
                 className="h-full rounded-full bg-accent transition-[width] duration-500"
                 style={{ width: `${acc ?? 0}%` }}
@@ -111,10 +111,10 @@ function QuizPage() {
         </div>
 
         {question.mode === "photo" ? (
-          <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto] gap-4 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)] lg:grid-rows-1 lg:gap-6">
-            <div className="relative min-h-0">
-              <div className="absolute -inset-2 rotate-3 rounded-[24px] bg-card/40 ring-1 ring-border" />
-              <div className="relative h-full min-h-0 overflow-hidden rounded-[24px] ring-1 ring-border">
+          <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)] lg:grid-rows-1 lg:gap-6">
+            <div className="relative mx-auto w-full max-w-[min(100%,42dvh)] shrink-0 lg:mx-0 lg:h-full lg:max-w-none lg:min-h-0">
+              <div className="absolute -inset-2 hidden rotate-3 rounded-[24px] bg-card/40 ring-1 ring-border lg:block" />
+              <div className="relative aspect-square w-full overflow-hidden rounded-[20px] ring-1 ring-border lg:aspect-auto lg:h-full lg:min-h-0 lg:rounded-[24px]">
                 <img
                   key={question.answer.id}
                   src={question.answer.photo}
@@ -124,13 +124,13 @@ function QuizPage() {
               </div>
             </div>
 
-            <div className="grid min-h-0 grid-cols-2 gap-4 lg:grid-rows-2">
+            <div className="grid min-h-0 grid-cols-2 gap-2 lg:grid-rows-2 lg:gap-4">
               {question.options.map((option) => (
                 <button
                   key={option.id}
                   type="button"
                   onClick={() => pick(option.id)}
-                  className={`relative flex min-h-0 items-center rounded-[20px] p-5 text-left ring-1 ring-border transition-colors ${
+                  className={`relative flex min-h-0 items-center rounded-[16px] p-3 text-left ring-1 ring-border transition-colors lg:rounded-[20px] lg:p-5 ${
                     picked
                       ? option.id === question.answer.id
                         ? "bg-accent/10 ring-2 ring-accent"
@@ -141,17 +141,17 @@ function QuizPage() {
                   }`}
                 >
                   {picked && option.id === question.answer.id && (
-                    <span className="absolute right-4 top-4 grid size-6 place-items-center rounded-full bg-accent text-accent-foreground">
-                      <Check className="size-3.5" />
+                    <span className="absolute right-2 top-2 grid size-5 place-items-center rounded-full bg-accent text-accent-foreground lg:right-4 lg:top-4 lg:size-6">
+                      <Check className="size-3 lg:size-3.5" />
                     </span>
                   )}
                   {picked && option.id === picked && option.id !== question.answer.id && (
-                    <span className="absolute right-4 top-4 grid size-6 place-items-center rounded-full bg-danger text-destructive-foreground">
-                      <X className="size-3.5" />
+                    <span className="absolute right-2 top-2 grid size-5 place-items-center rounded-full bg-danger text-destructive-foreground lg:right-4 lg:top-4 lg:size-6">
+                      <X className="size-3 lg:size-3.5" />
                     </span>
                   )}
                   <p
-                    className={`pr-8 text-2xl font-semibold tracking-tight ${
+                    className={`pr-6 text-lg font-semibold tracking-tight lg:pr-8 lg:text-2xl ${
                       picked && option.id === picked && option.id !== question.answer.id
                         ? "line-through decoration-danger/50"
                         : ""
@@ -164,17 +164,17 @@ function QuizPage() {
             </div>
           </div>
         ) : (
-          <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-4 lg:gap-6">
-            <p className="text-center text-3xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+          <div className="grid min-h-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-3 lg:gap-6">
+            <p className="text-center text-2xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
               {question.answer.name}
             </p>
-            <div className="grid min-h-0 auto-rows-fr grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="grid min-h-0 auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-4 lg:gap-4">
               {question.options.map((option) => (
                 <button
                   key={option.id}
                   type="button"
                   onClick={() => pick(option.id)}
-                  className={`relative min-h-0 overflow-hidden rounded-[20px] ring-1 ring-border transition-colors ${
+                  className={`relative min-h-0 overflow-hidden rounded-[16px] ring-1 ring-border transition-colors lg:rounded-[20px] ${
                     picked
                       ? option.id === question.answer.id
                         ? "ring-4 ring-accent"
@@ -186,13 +186,13 @@ function QuizPage() {
                 >
                   <img src={option.photo} alt="" className="h-full w-full object-cover" />
                   {picked && option.id === question.answer.id && (
-                    <span className="absolute right-3 top-3 grid size-7 place-items-center rounded-full bg-accent text-accent-foreground">
-                      <Check className="size-4" />
+                    <span className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-accent text-accent-foreground lg:right-3 lg:top-3 lg:size-7">
+                      <Check className="size-3.5 lg:size-4" />
                     </span>
                   )}
                   {picked && option.id === picked && option.id !== question.answer.id && (
-                    <span className="absolute right-3 top-3 grid size-7 place-items-center rounded-full bg-danger text-destructive-foreground">
-                      <X className="size-4" />
+                    <span className="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-danger text-destructive-foreground lg:right-3 lg:top-3 lg:size-7">
+                      <X className="size-3.5 lg:size-4" />
                     </span>
                   )}
                 </button>
@@ -202,7 +202,7 @@ function QuizPage() {
         )}
 
         {picked && (
-          <div className="mt-4 grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-2xl bg-card/60 px-5 py-3 ring-1 ring-border">
+          <div className="mt-3 grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-2xl bg-card/60 px-3 py-2.5 ring-1 ring-border lg:mt-4 lg:gap-4 lg:px-5 lg:py-3">
             <p className="min-w-0 text-sm text-foreground/70">
               {wasCorrect ? (
                 <span className="font-semibold text-accent">{t("quiz.correct")}</span>
@@ -231,7 +231,7 @@ function Shell({ children }: { children: ReactNode }) {
     <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-mist text-ink">
       <GlowBackground />
       <AppHeader />
-      <main className="relative z-10 mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col px-5 pb-5 sm:px-6">
+      <main className="relative z-10 mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col px-3 pb-3 sm:px-6 lg:px-5 lg:pb-5">
         {children}
       </main>
     </div>

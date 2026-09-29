@@ -27,33 +27,33 @@ import { LOCALE_LABELS, LOCALES } from "@/lib/i18n/dictionary";
 const PROJECT_REPO = "https://github.com/krumath-org/face-match-practice";
 
 const ITEM_CLASS =
-  "grid size-8 place-items-center rounded-full text-foreground/45 transition-colors hover:bg-ink hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";
+  "grid size-7 place-items-center rounded-full text-foreground/45 transition-colors hover:bg-ink hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none lg:size-8";
 
 /**
  * Slim bar that carries the app's brand (mark + wordmark) and the way back to KruMath:
  * language, the site home, the source repo, pricing, and the signed-in account. Home and
  * pricing replace the current page; the repo opens in a new tab so a half-finished round
- * is kept.
+ * is kept. Practice/Items live in AppHeader under this bar.
  */
 export function KruMathBar() {
   const { locale, setLocale, t } = useI18n();
 
   return (
     <div className="relative z-10 shrink-0 border-b border-border bg-card/60 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-1.5 sm:px-6">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-3 py-1 sm:px-6 lg:gap-3 lg:py-1.5">
         <Link to="/" className="flex min-w-0 shrink-0 items-center gap-2.5">
           <img
             src={`${import.meta.env.BASE_URL}favicon.svg`}
             alt=""
             aria-hidden="true"
-            className="size-8 shrink-0 select-none"
+            className="size-7 shrink-0 select-none lg:size-8"
             draggable={false}
           />
           <span className="hidden truncate text-lg font-bold tracking-tight sm:block">
             KruMemory
           </span>
         </Link>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 lg:gap-1.5">
           <div
             role="group"
             aria-label={t("nav.language")}
@@ -65,7 +65,7 @@ export function KruMathBar() {
                 type="button"
                 onClick={() => setLocale(option)}
                 aria-pressed={locale === option}
-                className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                className={`rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors lg:px-2.5 lg:py-1 lg:text-xs ${
                   locale === option
                     ? "bg-ink text-primary-foreground"
                     : "text-foreground/50 hover:text-foreground"

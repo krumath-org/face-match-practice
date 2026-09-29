@@ -8,7 +8,7 @@ export function ItemCard({ item, onDelete }: { item: Item; onDelete: (id: string
   const t = useTranslation();
 
   return (
-    <div className="lift relative flex h-full min-h-0 flex-col rounded-[22px] bg-card/70 p-2.5 ring-1 ring-border">
+    <div className="lift relative flex flex-col rounded-[22px] bg-card/70 p-2.5 ring-1 ring-border">
       <Tooltip>
         <TooltipTrigger asChild>
           <button
@@ -26,9 +26,9 @@ export function ItemCard({ item, onDelete }: { item: Item; onDelete: (id: string
         src={item.photo}
         alt={item.name}
         loading="lazy"
-        className="min-h-0 w-full flex-1 rounded-[16px] object-cover ring-1 ring-border"
+        className="aspect-[4/5] w-full rounded-[16px] object-cover ring-1 ring-border"
       />
-      <p className="mt-2 shrink-0 truncate px-1 text-sm font-medium">{item.name}</p>
+      <p className="mt-2 truncate px-1 text-sm font-medium">{item.name}</p>
     </div>
   );
 }

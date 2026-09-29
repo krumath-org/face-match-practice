@@ -45,7 +45,7 @@ function Home() {
 
       <main className="relative z-10 mx-auto flex w-full max-w-6xl min-h-0 flex-1 flex-col px-5 pb-5 sm:px-6">
         {collections.length > 0 && (
-          <div className="mb-4 shrink-0">
+          <div className="mb-2 shrink-0 lg:mb-3">
             <CollectionSwitcher
               collections={collections}
               selected={selectedCollection}

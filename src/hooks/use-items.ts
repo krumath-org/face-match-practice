@@ -66,6 +66,26 @@ function assertRealUser(userId: string | null): asserts userId is string {
   if (DEV_AUTH_BYPASS || userId === DEV_BYPASS_USER_ID) throw new AuthBypassPersistError();
 }
 
+/** Placeholder deck for layout checks when VITE_AUTH_BYPASS=1 (no Supabase session). */
+function buildDevBypassItems(): Item[] {
+  return Array.from({ length: 48 }, (_, i) => {
+    const n = i + 1;
+    const label = `Item ${n}`;
+    const svg = encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="400"><rect width="100%" height="100%" fill="#c5d4e8"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="#1f2a37" font-size="28" font-family="sans-serif">${label}</text></svg>`,
+    );
+    return {
+      id: `dev-bypass-${n}`,
+      collection: "local-preview",
+      name: label,
+      photo: `data:image/svg+xml,${svg}`,
+      photoPath: `dev/${n}.svg`,
+      correct: 0,
+      wrong: 0,
+    };
+  });
+}
+
 export function useItems() {
   const { userId } = useAuth();
   const [items, setItems] = useState<Item[]>([]);
@@ -88,6 +108,18 @@ export function useItems() {
     void (async () => {
       setLoaded(false);
       try {
+        // Bypass has no real session — seed a large local deck so layout/scroll can be verified.
+        if (DEV_AUTH_BYPASS) {
+          const seeded = buildDevBypassItems();
+          if (cancelled) return;
+          setItems(seeded);
+          setCollection(
+            resolveCollectionName(collectionNames(collectionsFromItems(seeded)), "local-preview"),
+          );
+          setError(null);
+          return;
+        }
+
         await importLegacyData(userId);
         if (cancelled) return;
         const fetched = await fetchItems();
