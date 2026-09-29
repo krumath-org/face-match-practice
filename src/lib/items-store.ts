@@ -1,11 +1,30 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase/browser-client";
 
-export type Person = {
+/**
+ * Table and bucket names are frozen identifiers from when this tool only drilled faces.
+ * They are deliberately kept: the table name is baked into the deployed RLS policies and
+ * the bucket holds every picture already uploaded, so renaming either would mean a
+ * migration over live rows and objects for no user-visible gain. Neither is ever shown.
+ */
+const TABLE = "face_match_people";
+export const PHOTO_BUCKET = "face-match-photos";
+const SIGNED_URL_TTL_SECONDS = 60 * 60;
+
+const ITEM_COLUMNS = "id, collection, name, photo_path, correct, wrong";
+
+/** Data left behind by the pre-KruMath localStorage version of this tool. */
+const LEGACY_PEOPLE_KEY = "faces.people.v1";
+const LEGACY_STATS_KEY = "faces.stats.v1";
+
+export type Item = {
   id: string;
+  /** The deck this item belongs to. */
+  collection: string;
+  /** What the user has to recall: a person's name, a word, a term. */
   name: string;
   /** Short-lived signed URL for display; the bucket itself stays private. */
   photo: string;
-  /** Storage object path, kept so the photo can be removed with the person. */
+  /** Storage object path, kept so the picture can be removed with the item. */
   photoPath: string;
   correct: number;
   wrong: number;
@@ -16,14 +35,9 @@ export type Stats = {
   wrong: number;
 };
 
-export const PHOTO_BUCKET = "face-match-photos";
-const SIGNED_URL_TTL_SECONDS = 60 * 60;
-
-const LEGACY_PEOPLE_KEY = "faces.people.v1";
-const LEGACY_STATS_KEY = "faces.stats.v1";
-
-type PersonRow = {
+type ItemRow = {
   id: string;
+  collection: string;
   name: string;
   photo_path: string;
   correct: number;
@@ -54,9 +68,9 @@ function extensionFor(mime: string): string {
 }
 
 /** Uploads into the caller's own folder, which is the only place RLS allows. */
-export async function uploadPersonPhoto(userId: string, dataUrl: string): Promise<string> {
+export async function uploadItemPhoto(userId: string, photo: string | Blob): Promise<string> {
   const supabase = getSupabaseBrowserClient();
-  const blob = dataUrlToBlob(dataUrl);
+  const blob = typeof photo === "string" ? dataUrlToBlob(photo) : photo;
   const contentType = blob.type || "image/jpeg";
   const path = `${userId}/${crypto.randomUUID()}.${extensionFor(contentType)}`;
 
@@ -80,18 +94,23 @@ export async function signPhotoPath(path: string): Promise<string> {
 // Reads and writes
 // ---------------------------------------------------------------------------
 
-export async function fetchPeople(): Promise<Person[]> {
+/**
+ * Every item the user owns, across all their decks. Fetching the lot in one go is what
+ * lets the deck switcher show per-deck counts without a second round trip, and these
+ * collections are personal and small.
+ */
+export async function fetchItems(): Promise<Item[]> {
   const supabase = getSupabaseBrowserClient();
   const { data, error } = await supabase
-    .from("face_match_people")
-    .select("id, name, photo_path, correct, wrong")
+    .from(TABLE)
+    .select(ITEM_COLUMNS)
     .order("created_at", { ascending: true });
   if (error) throw error;
 
-  const rows = (data ?? []) as PersonRow[];
+  const rows = (data ?? []) as ItemRow[];
   if (rows.length === 0) return [];
 
-  // One batched call rather than one per photo.
+  // One batched call rather than one per picture.
   const { data: signed } = await supabase.storage.from(PHOTO_BUCKET).createSignedUrls(
     rows.map((row) => row.photo_path),
     SIGNED_URL_TTL_SECONDS,
@@ -104,6 +123,7 @@ export async function fetchPeople(): Promise<Person[]> {
 
   return rows.map((row) => ({
     id: row.id,
+    collection: row.collection,
     name: row.name,
     photo: urlByPath.get(row.photo_path) ?? "",
     photoPath: row.photo_path,
@@ -112,22 +132,29 @@ export async function fetchPeople(): Promise<Person[]> {
   }));
 }
 
-export async function insertPerson(input: {
+export async function insertItem(input: {
   userId: string;
+  collection: string;
   name: string;
   photoPath: string;
-}): Promise<Person> {
+}): Promise<Item> {
   const supabase = getSupabaseBrowserClient();
   const { data, error } = await supabase
-    .from("face_match_people")
-    .insert({ user_id: input.userId, name: input.name, photo_path: input.photoPath })
-    .select("id, name, photo_path, correct, wrong")
+    .from(TABLE)
+    .insert({
+      user_id: input.userId,
+      collection: input.collection,
+      name: input.name,
+      photo_path: input.photoPath,
+    })
+    .select(ITEM_COLUMNS)
     .single();
   if (error) throw error;
 
-  const row = data as PersonRow;
+  const row = data as ItemRow;
   return {
     id: row.id,
+    collection: row.collection,
     name: row.name,
     photo: await signPhotoPath(row.photo_path),
     photoPath: row.photo_path,
@@ -136,34 +163,35 @@ export async function insertPerson(input: {
   };
 }
 
-export async function deletePersonRow(person: Person): Promise<void> {
+export async function deleteItemRow(item: Item): Promise<void> {
   const supabase = getSupabaseBrowserClient();
-  const { error } = await supabase.from("face_match_people").delete().eq("id", person.id);
+  const { error } = await supabase.from(TABLE).delete().eq("id", item.id);
   if (error) throw error;
 
   // Best effort: the row is gone either way, and a stray object is invisible to
   // every other user because of the bucket policies.
   await supabase.storage
     .from(PHOTO_BUCKET)
-    .remove([person.photoPath])
+    .remove([item.photoPath])
     .catch(() => undefined);
 }
 
-export async function updateAnswerCounts(person: Person): Promise<void> {
+export async function updateAnswerCounts(item: Item): Promise<void> {
   const supabase = getSupabaseBrowserClient();
   const { error } = await supabase
-    .from("face_match_people")
-    .update({ correct: person.correct, wrong: person.wrong })
-    .eq("id", person.id);
+    .from(TABLE)
+    .update({ correct: item.correct, wrong: item.wrong })
+    .eq("id", item.id);
   if (error) throw error;
 }
 
-export async function resetCounts(): Promise<void> {
+/** Zeroes one deck. RLS already limits the update to rows this user owns. */
+export async function resetCounts(collection: string): Promise<void> {
   const supabase = getSupabaseBrowserClient();
   const { error } = await supabase
-    .from("face_match_people")
+    .from(TABLE)
     .update({ correct: 0, wrong: 0 })
-    .not("id", "is", null);
+    .eq("collection", collection);
   if (error) throw error;
 }
 
@@ -171,12 +199,12 @@ export async function resetCounts(): Promise<void> {
 // Derived values
 // ---------------------------------------------------------------------------
 
-/** Overall accuracy is folded up from the rows the user currently has. */
-export function summarise(people: Person[]): Stats {
-  return people.reduce<Stats>(
-    (total, person) => ({
-      correct: total.correct + person.correct,
-      wrong: total.wrong + person.wrong,
+/** Accuracy is folded up from whatever is in scope: one deck, or every deck at once. */
+export function summarise(items: readonly Item[]): Stats {
+  return items.reduce<Stats>(
+    (total, item) => ({
+      correct: total.correct + item.correct,
+      wrong: total.wrong + item.wrong,
     }),
     { correct: 0, wrong: 0 },
   );
@@ -192,7 +220,7 @@ export function accuracy(stats: Stats): number | null {
 // One-time import of data left over from the previous localStorage version
 // ---------------------------------------------------------------------------
 
-export type LegacyPerson = {
+export type LegacyItem = {
   id: string;
   name: string;
   photo: string;
@@ -200,12 +228,12 @@ export type LegacyPerson = {
   wrong: number;
 };
 
-export function readLegacyPeople(): LegacyPerson[] {
+export function readLegacyItems(): LegacyItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(LEGACY_PEOPLE_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as LegacyPerson[];
+    const parsed = JSON.parse(raw) as LegacyItem[];
     if (!Array.isArray(parsed)) return [];
     return parsed.filter(
       (entry) =>

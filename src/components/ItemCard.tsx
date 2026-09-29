@@ -2,15 +2,9 @@ import { X } from "lucide-react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslation } from "@/lib/i18n/context";
-import type { Person } from "@/lib/people-store";
+import type { Item } from "@/lib/items-store";
 
-export function PersonCard({
-  person,
-  onDelete,
-}: {
-  person: Person;
-  onDelete: (id: string) => void;
-}) {
+export function ItemCard({ item, onDelete }: { item: Item; onDelete: (id: string) => void }) {
   const t = useTranslation();
 
   return (
@@ -19,22 +13,22 @@ export function PersonCard({
         <TooltipTrigger asChild>
           <button
             type="button"
-            onClick={() => onDelete(person.id)}
-            aria-label={t("people.remove", { name: person.name })}
+            onClick={() => onDelete(item.id)}
+            aria-label={t("items.remove", { name: item.name })}
             className="absolute right-3 top-3 z-10 grid size-8 place-items-center rounded-full bg-card/80 text-foreground/50 ring-1 ring-border transition-colors hover:bg-danger/10 hover:text-danger"
           >
             <X className="size-4" />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="left">{t("people.remove", { name: person.name })}</TooltipContent>
+        <TooltipContent side="left">{t("items.remove", { name: item.name })}</TooltipContent>
       </Tooltip>
       <img
-        src={person.photo}
-        alt={person.name}
+        src={item.photo}
+        alt={item.name}
         loading="lazy"
         className="min-h-0 w-full flex-1 rounded-[16px] object-cover ring-1 ring-border"
       />
-      <p className="mt-2 shrink-0 truncate px-1 text-sm font-medium">{person.name}</p>
+      <p className="mt-2 shrink-0 truncate px-1 text-sm font-medium">{item.name}</p>
     </div>
   );
 }

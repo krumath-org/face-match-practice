@@ -1,29 +1,56 @@
-# KruFace
+# KruMemory
 
-A small app for drilling the names and faces of people you keep mixing up. It runs as a
-tool inside [KruMath](https://krumath.com) at
+A small app for drilling anything you keep mixing up — people's names, vocabulary,
+symbols, formulas — one picture and one name at a time. It runs as a tool inside
+[KruMath](https://krumath.com) at
 [krumath.com/face-match-memorization](https://krumath.com/face-match-memorization).
 
 It is a hard-gated tool: a signed-in KruMath account is required, and anonymous Supabase
-sessions are refused. Faces, photos, and progress are stored in the shared KruMath
+sessions are refused. Items, pictures, and progress are stored in the shared KruMath
 Supabase project, scoped to the signed-in user by row level security.
+
+## Why the old names are still around
+
+The public URL still says `face-match-memorization`, and the database table
+(`face_match_people`) and storage bucket (`face-match-photos`) keep their original names
+too. All three are frozen on purpose: the URL is a live link that would break, and the
+other two are referenced by deployed policies and hold every picture already uploaded, so
+renaming them would mean a migration over live rows for no user-visible gain.
+
+None of them are ever shown to a user — the app calls itself KruMemory, and the table is
+deliberately generic (`collection`, `name`, `photo_path`, two counters), so a row is simply
+one picture plus the label to remember.
 
 ## How it works
 
-- **Practice** — start a quiz straight from the home page. One portrait at a time.
-- **People** — a grid of everyone you have added, with an add button and per-person delete.
-- **Add person** — pick a photo and type a name. The photo is uploaded to Supabase Storage.
+- **Practice** — start a quiz for the selected collection straight from the home page.
+- **Items** — a grid of everything in the selected collection, with an add button and
+  per-item delete.
+- **Add item** — pick a picture, type the name or label, and choose the collection it
+  belongs to. The picture is uploaded to Supabase Storage.
 
-Each round builds one of two question types at random:
+**Collections** are how one app covers several subjects. A collection is a user-named deck
+— "People", "French words", "Physics" — and items never leave it, so a vocabulary picture
+can never turn up as a distractor for a person's name. The switcher sits on the home and
+item screens, and the choice is remembered in `localStorage`.
 
-- **Photo → name**: show a portrait with four name cards.
-- **Name → photo**: show a name with four portraits.
+A collection exists only as a name on its items, so there is no separate list to maintain:
+typing a new name on the add screen creates it. Names are compared case-insensitively, so
+"french" reuses an existing "French" rather than starting a second deck. A collection needs
+at least four items before it can be practised, because every question offers four options.
+
+Each round builds one of two question types at random, drawing the answer and the
+distractors from a single collection:
+
+- **Picture → name**: show a picture with four name cards.
+- **Name → picture**: show a name with four pictures.
 
 Answers and option order are shuffled every time, and you get immediate feedback plus the
-correct answer whenever you miss. People you get wrong more often are weighted to come up
-more frequently, so weak faces repeat until they stick.
+correct answer whenever you miss. Items you get wrong more often are weighted to come up
+more frequently, so weak ones repeat until they stick.
 
-Accuracy is tracked per person and overall, and shown on the home page and during practice.
+Accuracy is tracked per item and per collection, and shown on the home page and during
+practice. Progress in one collection never affects another.
 
 ## Authentication
 
@@ -59,7 +86,12 @@ typed lookup, so a missing Khmer string is a compile error rather than a silent 
 Khmer needs a different typeface than Space Grotesk, so `Noto Sans Khmer` is loaded
 alongside it and added to `--font-sans` in `src/styles.css`.
 
-Khmer strings are machine-authored and would benefit from a native-speaker review.
+`i18n-review.json` is the reviewed source of truth: every key, where it appears on screen,
+and both values. Keep it in step with the dictionary when copy changes.
+
+The strings added when the tool was generalised — the collection, item and picture wording
+— are machine-authored and have not been reviewed by a native speaker yet. Each one is
+marked `Pending native-speaker review.` in `i18n-review.json`.
 
 ## Database setup
 
@@ -69,12 +101,18 @@ The table and private storage bucket are declared in one idempotent file:
 supabase/face-match-memorization.sql
 ```
 
-Paste it into the Supabase SQL Editor and run it. It is safe to run more than once and only
-creates new objects. A commented-out rollback block sits at the bottom.
+Paste it into the Supabase SQL Editor and run it. It is safe to run more than once: it only
+creates the objects that are missing and adds the column if it is absent. A commented-out
+rollback block sits at the bottom.
 
 It creates `public.face_match_people` (RLS on, one policy keyed to `auth.uid()`) and a
 private `face-match-photos` bucket whose policies restrict every user to their own
-`<user_id>/` folder. Photos are read back through short-lived signed URLs.
+`<user_id>/` folder. Pictures are read back through short-lived signed URLs.
+
+The file doubles as the migration for collections. Re-running it adds the `collection`
+column to an install that predates them and rebuilds the one index to include it. Rows
+saved before that point land in a deck named `People`, which is the column's default; the
+default also acts as a safety net for any insert that forgets the column.
 
 One thing to read before running it: anonymous Supabase sessions carry a real JWT and so
 land in the `authenticated` role, which means `auth.uid() = user_id` alone would not exclude
@@ -83,9 +121,10 @@ them. Both the table policy and the storage policies therefore also assert
 
 ## KruMath integration
 
-A slim bar sits above the app header with the EN/KM switcher, **Home**, the **source on
-GitHub**, **plans and pricing**, and an **account menu** (avatar, name, email, account
-settings, sign out). Home and pricing replace the current page; the repo opens in a new tab
+A slim bar sits above the app header with the **KruMemory** wordmark, the EN/KM switcher,
+**Home**, the **source on GitHub**, **plans and pricing**, and an **account menu** (avatar,
+name, email, account settings, sign out). The app was renamed from KruFace but the routes
+below were left alone, so nothing on the KruMath side needs to change. Home and pricing replace the current page; the repo opens in a new tab
 so a half-finished round is kept. The app's own navigation is untouched. The bar lives in
 `src/components/KruMathBar.tsx`.
 
@@ -181,14 +220,16 @@ npx wrangler dev --config .output/server/wrangler.json
 
 ```
 src/
-  components/     shared UI (KruMath bar, auth gate, header, background, person card)
-  hooks/          usePeople — Supabase-backed store plus one-time legacy import
+  components/     shared UI (KruMath bar, auth gate, header, background, item card,
+                  collection switcher)
+  hooks/          useItems — Supabase-backed store, deck selection, legacy import
   lib/
     auth/         session resolution (server + browser), gate state, sign-in URL
+    collections   deck names, whitespace/case normalisation, remembered selection
     i18n/         EN/KM dictionary and provider
     supabase/     browser and server clients, project config
-    people-store  table and Storage access, derived stats, legacy import helpers
-  routes/         file-based routes: /, /people, /people/add, /quiz
+    items-store   table and Storage access, derived stats, legacy import helpers
+  routes/         file-based routes: /, /items, /items/add, /quiz
   styles.css      Tailwind theme and custom utilities
 supabase/         SQL to run by hand in the Supabase SQL Editor
 wrangler.jsonc    Worker name and the Cloudflare routes that mount the app

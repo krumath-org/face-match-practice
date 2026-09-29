@@ -15,7 +15,7 @@ export const SUPABASE_PROJECT_REF = SUPABASE_URL
   ? new URL(SUPABASE_URL).hostname.split(".")[0]
   : undefined;
 
-/** Supabase stores the session under this key, both as a cookie and in localStorage. */
+/** Supabase stores the session under this key, as a cookie (and, for older clients, in localStorage). */
 export const AUTH_STORAGE_KEY = SUPABASE_PROJECT_REF
   ? `sb-${SUPABASE_PROJECT_REF}-auth-token`
   : undefined;

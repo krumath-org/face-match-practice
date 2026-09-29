@@ -49,7 +49,9 @@ export function KruMathBar() {
             className="size-8 shrink-0 select-none"
             draggable={false}
           />
-          <span className="hidden truncate text-lg font-bold tracking-tight sm:block">KruFace</span>
+          <span className="hidden truncate text-lg font-bold tracking-tight sm:block">
+            KruMemory
+          </span>
         </Link>
         <div className="flex items-center gap-1.5">
           <div

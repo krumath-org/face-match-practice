@@ -95,10 +95,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "KruFace" },
-      { name: "description", content: "Practice remembering faces and names." },
-      { property: "og:title", content: "KruFace" },
-      { property: "og:description", content: "Practice remembering faces and names." },
+      { title: "KruMemory" },
+      { name: "description", content: "Practice remembering anything, one picture at a time." },
+      { property: "og:title", content: "KruMemory" },
+      {
+        property: "og:description",
+        content: "Practice remembering anything, one picture at a time.",
+      },
       { property: "og:type", content: "website" },
       { property: "twitter:card", content: "summary_large_image" },
       // Private tool: keep it out of search results, including the pre-auth shell.

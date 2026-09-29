@@ -19,6 +19,11 @@ function normalizeBasePath(value: string): string {
   return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
 }
 
+/**
+ * The mount point is frozen at the face-era slug even though the app is now KruMemory:
+ * it is a live public URL, and changing it would break every existing link and bookmark.
+ * The same value is repeated in `wrangler.jsonc` and in the KruMath handoff doc.
+ */
 const basePath = normalizeBasePath(process.env["APP_BASE_PATH"] ?? "/face-match-memorization");
 const viteBase = basePath === "/" ? "/" : `${basePath}/`;
 

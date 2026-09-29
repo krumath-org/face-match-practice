@@ -3,20 +3,20 @@ import { ArrowLeft, Check, Plus, X } from "lucide-react";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { GlowBackground } from "@/components/GlowBackground";
-import { usePeople } from "@/hooks/use-people";
+import { useItems } from "@/hooks/use-items";
 import { useTranslation } from "@/lib/i18n/context";
-import { accuracy } from "@/lib/people-store";
-import { buildQuestion, MIN_PEOPLE, type Question } from "@/lib/quiz";
+import { accuracy } from "@/lib/items-store";
+import { buildQuestion, MIN_ITEMS, type Question } from "@/lib/quiz";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
     meta: [
-      { title: "Practice — KruFace" },
-      { name: "description", content: "Match the face to the name, one question at a time." },
-      { property: "og:title", content: "Practice — KruFace" },
+      { title: "Practice — KruMemory" },
+      { name: "description", content: "Match the picture to the name, one question at a time." },
+      { property: "og:title", content: "Practice — KruMemory" },
       {
         property: "og:description",
-        content: "Match the face to the name, one question at a time.",
+        content: "Match the picture to the name, one question at a time.",
       },
     ],
   }),
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/quiz")({
 });
 
 function QuizPage() {
-  const { people, stats, loaded, recordAnswer } = usePeople();
+  const { visibleItems, stats, loaded, recordAnswer } = useItems();
   const t = useTranslation();
   const [question, setQuestion] = useState<Question | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
@@ -33,16 +33,16 @@ function QuizPage() {
   const next = useCallback(
     (lastId?: string) => {
       setPicked(null);
-      setQuestion(buildQuestion(people, lastId));
+      setQuestion(buildQuestion(visibleItems, lastId));
     },
-    [people],
+    [visibleItems],
   );
 
   useEffect(() => {
-    if (loaded && !question && people.length >= MIN_PEOPLE) {
-      setQuestion(buildQuestion(people));
+    if (loaded && !question && visibleItems.length >= MIN_ITEMS) {
+      setQuestion(buildQuestion(visibleItems));
     }
-  }, [loaded, question, people]);
+  }, [loaded, question, visibleItems]);
 
   const pick = (id: string) => {
     if (picked || !question) return;
@@ -53,8 +53,8 @@ function QuizPage() {
 
   const acc = accuracy(stats);
 
-  if (loaded && people.length < MIN_PEOPLE) {
-    const missing = MIN_PEOPLE - people.length;
+  if (loaded && visibleItems.length < MIN_ITEMS) {
+    const missing = MIN_ITEMS - visibleItems.length;
     return (
       <Shell>
         <section className="fade-up glass grid min-h-0 flex-1 place-items-center gap-4 rounded-[28px] px-6 text-center ring-1 ring-border">
@@ -62,11 +62,11 @@ function QuizPage() {
             {t(missing === 1 ? "quiz.needMore_one" : "quiz.needMore_other", { count: missing })}
           </span>
           <Link
-            to="/people/add"
+            to="/items/add"
             className="shadow-accent-glow inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground ring-1 ring-accent/40"
           >
             <Plus className="size-4" />
-            {t("people.add")}
+            {t("items.add")}
           </Link>
         </section>
       </Shell>

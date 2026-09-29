@@ -26,8 +26,8 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
  * https://krumath.com/sign-in into a redirect to this Worker's host. Returning a raw
  * Response keeps the cross-origin Location intact.
  *
- * A request with no session cookie at all is let through so the browser can check its
- * own storage; see `resolveServerAuth`.
+ * A request with no session cookie at all is let through so the browser can check the
+ * shared cookie itself; see `resolveServerAuth`.
  */
 const authMiddleware = createMiddleware({ type: "request" }).server(
   async ({ next, request, handlerType }) => {

@@ -39,7 +39,13 @@ const AuthContext = createContext<AuthContextValue | null>(null);
  * compile-time `false` there, so this collapses to dead code. It exists because a
  * localhost origin cannot hold krumath.com's session cookie.
  */
-const DEV_AUTH_BYPASS = import.meta.env.DEV && import.meta.env["VITE_AUTH_BYPASS"] === "1";
+export const DEV_AUTH_BYPASS = import.meta.env.DEV && import.meta.env["VITE_AUTH_BYPASS"] === "1";
+
+/**
+ * Placeholder uid used only while {@link DEV_AUTH_BYPASS} is on. It is not a real
+ * `auth.users` row, so Storage/RLS rejects every write under this id.
+ */
+export const DEV_BYPASS_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 /** Placeholder identity so the account menu is workable while the bypass is on. */
 const DEV_PROFILE: UserProfile = { name: "Local dev", email: "dev@localhost" };
@@ -55,7 +61,7 @@ export function AuthProvider({ initial, children }: { initial: AuthState; childr
     DEV_AUTH_BYPASS
       ? {
           status: "authenticated",
-          userId: "00000000-0000-0000-0000-000000000000",
+          userId: DEV_BYPASS_USER_ID,
           profile: DEV_PROFILE,
         }
       : initial,

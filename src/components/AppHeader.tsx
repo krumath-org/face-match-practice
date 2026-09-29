@@ -21,12 +21,12 @@ export function AppHeader() {
             {t("nav.practice")}
           </Link>
           <Link
-            to="/people"
+            to="/items"
             activeProps={{ className: "bg-ink text-primary-foreground" }}
             inactiveProps={{ className: "text-foreground/55 hover:text-foreground" }}
             className="rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
           >
-            {t("nav.people")}
+            {t("nav.items")}
           </Link>
         </nav>
       </header>

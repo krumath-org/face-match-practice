@@ -1,8 +1,8 @@
 {
-  "name": "kruface",
+  "name": "krumemory",
   "private": true,
   "version": "0.1.0",
-  "description": "A small offline app for drilling names and faces.",
+  "description": "Drill anything you keep mixing up — faces, words, symbols, formulas — one picture and one name at a time.",
   "sideEffects": false,
   "type": "module",
   "scripts": {

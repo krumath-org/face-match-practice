@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuizRouteImport } from './routes/quiz'
-import { Route as PeopleIndexRouteImport } from './routes/people.index'
-import { Route as PeopleAddRouteImport } from './routes/people.add'
+import { Route as ItemsIndexRouteImport } from './routes/items.index'
+import { Route as ItemsAddRouteImport } from './routes/items.add'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,49 +24,49 @@ const QuizRoute = QuizRouteImport.update({
   path: '/quiz',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PeopleIndexRoute = PeopleIndexRouteImport.update({
-  id: '/people/',
-  path: '/people/',
+const ItemsIndexRoute = ItemsIndexRouteImport.update({
+  id: '/items/',
+  path: '/items/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PeopleAddRoute = PeopleAddRouteImport.update({
-  id: '/people/add',
-  path: '/people/add',
+const ItemsAddRoute = ItemsAddRouteImport.update({
+  id: '/items/add',
+  path: '/items/add',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/quiz': typeof QuizRoute
-  '/people/add': typeof PeopleAddRoute
-  '/people/': typeof PeopleIndexRoute
+  '/items/add': typeof ItemsAddRoute
+  '/items/': typeof ItemsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/quiz': typeof QuizRoute
-  '/people/add': typeof PeopleAddRoute
-  '/people': typeof PeopleIndexRoute
+  '/items/add': typeof ItemsAddRoute
+  '/items': typeof ItemsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/quiz': typeof QuizRoute
-  '/people/add': typeof PeopleAddRoute
-  '/people/': typeof PeopleIndexRoute
+  '/items/add': typeof ItemsAddRoute
+  '/items/': typeof ItemsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/quiz' | '/people/add' | '/people/'
+  fullPaths: '/' | '/quiz' | '/items/add' | '/items/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/quiz' | '/people/add' | '/people'
-  id: '__root__' | '/' | '/quiz' | '/people/add' | '/people/'
+  to: '/' | '/quiz' | '/items/add' | '/items'
+  id: '__root__' | '/' | '/quiz' | '/items/add' | '/items/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   QuizRoute: typeof QuizRoute
-  PeopleAddRoute: typeof PeopleAddRoute
-  PeopleIndexRoute: typeof PeopleIndexRoute
+  ItemsAddRoute: typeof ItemsAddRoute
+  ItemsIndexRoute: typeof ItemsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,18 +85,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuizRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/people/': {
-      id: '/people/'
-      path: '/people'
-      fullPath: '/people/'
-      preLoaderRoute: typeof PeopleIndexRouteImport
+    '/items/': {
+      id: '/items/'
+      path: '/items'
+      fullPath: '/items/'
+      preLoaderRoute: typeof ItemsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/people/add': {
-      id: '/people/add'
-      path: '/people/add'
-      fullPath: '/people/add'
-      preLoaderRoute: typeof PeopleAddRouteImport
+    '/items/add': {
+      id: '/items/add'
+      path: '/items/add'
+      fullPath: '/items/add'
+      preLoaderRoute: typeof ItemsAddRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -105,8 +105,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   QuizRoute: QuizRoute,
-  PeopleAddRoute: PeopleAddRoute,
-  PeopleIndexRoute: PeopleIndexRoute,
+  ItemsAddRoute: ItemsAddRoute,
+  ItemsIndexRoute: ItemsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

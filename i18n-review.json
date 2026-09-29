@@ -1,17 +1,20 @@
 {
-  "_about": "APPROVED EN/KM strings for the KruFace tool. This is the reviewed source of truth; the applied copy lives in src/lib/i18n/dictionary.ts. Values here were approved by the project owner.",
+  "_about": "APPROVED EN/KM strings for the KruMemory tool. This is the reviewed source of truth; the applied copy lives in src/lib/i18n/dictionary.ts. Values here were approved by the project owner.",
   "_placeholders": {
-    "{count}": "a number (people/faces remaining or counted)",
-    "{name}": "a person's name, typed by the user",
+    "{count}": "a number (items remaining, or items in a deck)",
+    "{name}": "the label the user typed for an item: a person's name, a word, a term",
     "{number}": "the question number, starting at 1",
-    "{accuracy}": "a whole-number percentage, e.g. 82"
+    "{accuracy}": "a whole-number percentage, e.g. 82",
+    "{collection}": "the user-typed name of a collection (deck), e.g. People"
   },
   "_placeholders_km_note": "DECIDED: Khmer mode uses Western digits for every runtime number ({count}, {number}, {accuracy}) and for the raw counters rendered outside this file. No Khmer-numeral conversion happens at the substitution point.",
   "_do_not_translate": [
     "KruMath (brand, in every toolbar label)",
-    "KruFace (brand, app name)",
-    "GitHub (brand)"
+    "KruMemory (brand, app name)",
+    "GitHub (brand)",
+    "Collection names typed by the user (they are data, not copy)"
   ],
+  "_review_note": "Every Khmer value marked 'Pending native-speaker review.' is machine-authored and has not yet been checked by a native speaker. That covers all the collection, item and picture wording added when the tool was generalised from faces to any picture+label pair.",
   "strings": {
     "auth.checking": {
       "where": "Full-screen loading state while the account is verified. Shown before anything else, so it should feel calm and brief.",
@@ -38,10 +41,10 @@
       "en": "Practice",
       "km": "អនុវត្ត"
     },
-    "nav.people": {
-      "where": "App header tab -> the list of people.",
-      "en": "People",
-      "km": "មនុស្ស"
+    "nav.items": {
+      "where": "App header tab -> the list of items in the deck currently in view. Replaces the old nav.people. Pending native-speaker review.",
+      "en": "Items",
+      "km": "បញ្ជី"
     },
     "nav.language": {
       "where": "Screen-reader label for the EN/KM button group. Never seen visually.",
@@ -69,109 +72,199 @@
       "km": "កំពុងផ្ទុក…"
     },
     "home.status.ready": {
-      "where": "Status pill once there are enough faces to practise.",
+      "where": "Status pill once the deck in view has enough items to practise.",
       "en": "Ready to practice",
       "km": "រួចរាល់ក្នុងការអនុវត្ត"
     },
     "home.status.needMore": {
-      "where": "Status pill when there are not yet 4 faces. {count} is how many more are needed.",
+      "where": "Status pill when the deck in view has fewer than 4 items. {count} is how many more are needed.",
       "en": "{count} more to start",
       "km": "ត្រូវការ {count} ទៀតដើម្បីចាប់ផ្ដើម"
     },
     "home.title": {
-      "where": "The main headline. Currently two short parallel phrases for rhythm.",
-      "en": "See the face. Remember the name.",
-      "km": "មើលមុខ ចាំឈ្មោះ"
+      "where": "The main headline. Two short parallel phrases for rhythm. 'The picture' is deliberately broad: a portrait, a photo of a formula, or a vocabulary image. Pending native-speaker review.",
+      "en": "See the picture. Remember the name.",
+      "km": "មើលរូបភាព ចាំឈ្មោះ"
     },
     "home.subtitle": {
-      "where": "One- or two-sentence explanation under the headline. Khmer leads with the relatable problem (good with faces, bad with names) then the invitation.",
-      "en": "Good with faces but keep forgetting names? Come on — practice until you never forget a name again.",
-      "km": "ពូកែចាំមុខ តែភ្លេចឈ្មោះមែន? តស់! ហ្វឹកហាត់មើលមុខ ចាំឈ្មោះ កុំឱ្យភ្លេចឈ្មោះគេទៀត។"
+      "where": "One- or two-sentence explanation under the headline. Names several subjects on purpose so the tool reads as general-purpose rather than face-only. Pending native-speaker review.",
+      "en": "Whatever you keep mixing up — faces, words, symbols, formulas — practise until nothing slips away.",
+      "km": "អ្វីៗដែលអ្នកច្រើនច្រឡំ — មុខមនុស្ស ពាក្យថ្មី សញ្ញា រូបមន្ត — ហ្វឹកហាត់រហូតដល់មិនភ្លេចទៀត។"
     },
     "home.start": {
-      "where": "Primary button -> the quiz. Only shown when there are enough faces.",
+      "where": "Primary button -> the quiz. Only shown when the deck in view has enough items.",
       "en": "Start practice",
       "km": "ចាប់ផ្ដើមអនុវត្ត"
     },
-    "home.addPeople": {
-      "where": "Primary button -> the add-person screen. Shown instead of `home.start` when there are not enough faces.",
-      "en": "Add people",
-      "km": "បន្ថែមមនុស្ស"
+    "home.addItems": {
+      "where": "Primary button -> the add-item screen. Shown instead of home.start when the deck in view has too few items.",
+      "en": "Add items",
+      "km": "បន្ថែមរបស់"
     },
     "home.accuracy": {
       "where": "Label inside the stats pill, sitting next to a percentage like `82%`. Lowercase by design.",
       "en": "accuracy",
       "km": "ភាពត្រឹមត្រូវ"
     },
-    "people.title": {
-      "where": "Heading of the people screen.",
-      "en": "Your people",
-      "km": "បញ្ជីមនុស្សរបស់អ្នក"
+    "collections.label": {
+      "where": "Screen-reader label for the collection switcher. The deck names shown inside it are user data and are never translated. Pending native-speaker review.",
+      "en": "Collections",
+      "km": "បញ្ជី"
     },
-    "people.count": {
-      "where": "Sub-line under the heading. {count} is the number of saved faces, so this must read correctly at 0, 1 and many.",
-      "en": "{count} faces in your collection",
-      "km": "មាន {count} នាក់ក្នុងបញ្ជីរបស់អ្នក"
+    "collections.addFirst": {
+      "where": "Primary button on the home screen when the account has no decks at all yet, so there is nothing to switch between. Pending native-speaker review.",
+      "en": "Add your first item",
+      "km": "បន្ថែមរបស់ដំបូងរបស់អ្នក"
     },
-    "people.add": {
-      "where": "Button -> add-person screen. Also reused inside the quiz when there are too few faces.",
-      "en": "Add person",
-      "km": "បន្ថែមមនុស្ស"
+    "items.title": {
+      "where": "Heading of the item list screen. Pending native-speaker review.",
+      "en": "Your items",
+      "km": "បញ្ជីរបស់អ្នក"
     },
-    "people.empty": {
-      "where": "Empty state: the whole screen becomes one big button with this label.",
-      "en": "Add your first face",
-      "km": "បន្ថែមមនុស្សដំបូងរបស់អ្នក"
+    "items.count": {
+      "where": "Sub-line under the heading. {count} is the number of items in the deck and {collection} is the user's own name for it, so the word order has to survive a long deck name. Pending native-speaker review.",
+      "en": "{count} items in {collection}",
+      "km": "មាន {count} ក្នុង {collection}"
     },
-    "people.remove": {
-      "where": "Tooltip on each card's X button. {name} is the person's name, so word order matters.",
+    "items.add": {
+      "where": "Button -> add-item screen. Also reused inside the quiz when the deck in view has too few items. Pending native-speaker review.",
+      "en": "Add item",
+      "km": "បន្ថែមរបស់"
+    },
+    "items.empty": {
+      "where": "Empty state: the whole screen becomes one big button with this label. Pending native-speaker review.",
+      "en": "Add your first item",
+      "km": "បន្ថែមរបស់ដំបូងរបស់អ្នក"
+    },
+    "items.remove": {
+      "where": "Tooltip on each card's X button. {name} is the item's label, so word order matters.",
       "en": "Remove {name}",
       "km": "លុប {name}"
     },
     "add.back": {
-      "where": "Button -> back to the people list.",
+      "where": "Button -> back to the item list.",
       "en": "Back",
-      "km": "ត្រឡប់ក្រោយ"
+      "km": "ត្រលប់ក្រោយ"
     },
     "add.save": {
-      "where": "Button that uploads the photo and saves the person.",
+      "where": "Button that uploads the picture and saves the item.",
       "en": "Save",
       "km": "រក្សាទុក"
+    },
+    "add.saveAll": {
+      "where": "Header save button when more than one pending photo is queued for batch upload.",
+      "en": "Save all",
+      "km": "រក្សាទុកទាំងអស់"
     },
     "add.saving": {
       "where": "Same button while the upload is in flight. Must read as an in-progress state.",
       "en": "Saving…",
       "km": "កំពុងរក្សាទុក…"
     },
-    "add.changePhoto": {
-      "where": "Tooltip once a photo is chosen, inviting a replacement.",
-      "en": "Change photo",
-      "km": "ប្ដូររូបថត"
+    "add.savingProgress": {
+      "where": "Header save button while a batch upload is in flight. {done} and {total} are counts.",
+      "en": "Saving {done}/{total}…",
+      "km": "កំពុងរក្សាទុក {done}/{total}…"
     },
-    "add.choosePhoto": {
-      "where": "Tooltip before any photo is chosen.",
-      "en": "Choose a photo",
-      "km": "ជ្រើសរើសរូបថត"
+    "add.changePicture": {
+      "where": "Tooltip once a picture is chosen, inviting a replacement. Renamed from add.changePhoto. Pending native-speaker review.",
+      "en": "Change picture",
+      "km": "ប្ដូររូបភាព"
     },
-    "add.selectedPortrait": {
-      "where": "Screen-reader description of the chosen image. Never seen visually.",
-      "en": "Selected portrait",
-      "km": "រូបថតដែលបានជ្រើសរើស"
+    "add.choosePicture": {
+      "where": "Tooltip before any picture is chosen. Renamed from add.choosePhoto. Pending native-speaker review.",
+      "en": "Choose a picture",
+      "km": "ជ្រើសរើសរូបភាព"
+    },
+    "add.dropHint": {
+      "where": "Hint under the empty photo drop zone inviting drag-and-drop or click.",
+      "en": "Drop photos here, or click to choose",
+      "km": "ទាញរូបភាពមកទីនេះ ឬចុចដើម្បីជ្រើស"
+    },
+    "add.uploadFolder": {
+      "where": "Secondary control that opens a folder picker (Chromium/Safari) to batch-add every image in a folder.",
+      "en": "Upload folder",
+      "km": "ផ្ទុកថតឯកសារ"
+    },
+    "add.removePending": {
+      "where": "Screen-reader / button label to remove one photo from the batch review queue.",
+      "en": "Remove",
+      "km": "លុប"
+    },
+    "add.batchTooMany": {
+      "where": "Error when the dropped or picked set exceeds the soft cap. {max} is that number.",
+      "en": "Too many photos (max {max}).",
+      "km": "រូបភាពច្រើនពេក (អតិបរមា {max})។"
+    },
+    "add.batchNone": {
+      "where": "Error when a folder or multi-select contained no image files.",
+      "en": "No image files found.",
+      "km": "រកមិនឃើញឯកសាររូបភាព។"
+    },
+    "add.batchPartialFailed": {
+      "where": "Warning after a batch save where some rows failed. {saved} and {failed} are counts; failed rows stay in the queue.",
+      "en": "Saved {saved}, but {failed} failed. Fix and try again.",
+      "km": "រក្សាទុកបាន {saved} ប៉ុន្តែ {failed} បរាជ័យ។ សូមកែហើយព្យាយាមម្ដងទៀត។"
+    },
+    "add.selectedPicture": {
+      "where": "Screen-reader description of the chosen image. Never seen visually. Renamed from add.selectedPortrait. Pending native-speaker review.",
+      "en": "Selected picture",
+      "km": "រូបភាពដែលបានជ្រើសរើស"
     },
     "add.namePlaceholder": {
-      "where": "Name field hint, and the field's screen-reader label.",
-      "en": "Name",
-      "km": "ឈ្មោះ"
+      "where": "Label field hint, and the field's screen-reader label. This is the answer the user has to recall, so it covers a person's name, a word, or a term. Pending native-speaker review.",
+      "en": "Name or label",
+      "km": "ឈ្មោះ ឬស្លាក"
+    },
+    "add.collectionLabel": {
+      "where": "Label above the collection field: which deck the item is filed under. Pending native-speaker review.",
+      "en": "Name list",
+      "km": "បញ្ជីឈ្មោះ"
+    },
+    "add.collectionPlaceholder": {
+      "where": "Hint inside the collection field, showing the kind of name to type. The value is an example, so it must not look like a required exact value. Pending native-speaker review.",
+      "en": "e.g. Team roster or English verb group",
+      "km": "ឧទាហរណ៍៖ បញ្ជីឈ្មោះក្រុមការងារ ឬ ក្រុមពាក្យកិរិយាអង់គ្លេស"
+    },
+    "add.collectionNew": {
+      "where": "Dashed chip when no deck is chosen yet; opens the name box. Also the screen-reader label for that box. Pending native-speaker review.",
+      "en": "New collection",
+      "km": "បញ្ជីថ្មី"
+    },
+    "add.collectionEdit": {
+      "where": "Dashed chip when a deck is already chosen; opens the name box to change it. Pending native-speaker review.",
+      "en": "Edit collection",
+      "km": "កែបញ្ជី"
+    },
+    "add.collectionConfirm": {
+      "where": "Screen-reader label on the tick button that accepts a freshly typed deck name. The button is an icon, so this text is the only description. Pending native-speaker review.",
+      "en": "Use this name",
+      "km": "ប្រើឈ្មោះនេះ"
+    },
+    "add.collectionCancel": {
+      "where": "Screen-reader label on the X that closes the new-deck name box and returns to the deck chips. Hidden when the account has no decks yet, because there is nothing to go back to. Pending native-speaker review.",
+      "en": "Cancel",
+      "km": "បោះបង់"
+    },
+    "add.collectionRequired": {
+      "where": "Quiet hint under the deck chips while no deck is chosen; it is the only explanation for the disabled Save button. Shown instead of add.collectionExisting. Pending native-speaker review.",
+      "en": "Choose a collection, or create one, to save this card.",
+      "km": "សូមជ្រើសរើសបញ្ជី ឬបង្កើតបញ្ជីថ្មី ដើម្បីរក្សាទុករបស់នេះ។"
+    },
+    "add.collectionExisting": {
+      "where": "Reassurance under the name box when what was typed matches a deck that already exists, so the card joins it instead of making a near-duplicate. {collection} is that deck's existing spelling. Pending native-speaker review.",
+      "en": "Already exists — this card joins {collection}.",
+      "km": "បញ្ជីនេះមានរួចហើយ — របស់នេះនឹងចូលក្នុង {collection}។"
     },
     "quiz.needMore_one": {
-      "where": "Shown when exactly 1 more face is needed. Kept as a separate key from the plural even though the two Khmer values are now identical: English needs the distinction (\"1 more person\" vs \"3 more people\"), and quiz.tsx chooses the key by count === 1.",
-      "en": "Add 1 more person to practice",
-      "km": "បន្ថែម {count} នាក់ទៀតដើម្បីអនុវត្ត"
+      "where": "Shown when exactly 1 more item is needed. Kept as a separate key from the plural even though the two Khmer values are identical: English needs the distinction (\"1 more item\" vs \"3 more items\"), and quiz.tsx chooses the key by count === 1. Pending native-speaker review.",
+      "en": "Add 1 more item to practice",
+      "km": "បន្ថែម {count} ទៀតដើម្បីអនុវត្ត"
     },
     "quiz.needMore_other": {
-      "where": "Shown when 2 or 3 more faces are needed. {count} is that number.",
-      "en": "Add {count} more people to practice",
-      "km": "បន្ថែម {count} នាក់ទៀតដើម្បីអនុវត្ត"
+      "where": "Shown when 2 or 3 more items are needed. {count} is that number. Pending native-speaker review.",
+      "en": "Add {count} more items to practice",
+      "km": "បន្ថែម {count} ទៀតដើម្បីអនុវត្ត"
     },
     "quiz.back": {
       "where": "Button -> home. Also the screen-reader label on that button.",
@@ -184,7 +277,7 @@
       "km": "សំណួរទី {number}"
     },
     "quiz.progress": {
-      "where": "Top-right progress text once answering has begun. {accuracy} is a percentage, {count} is how many answered. The interpunct is part of the design - feel free to change it.",
+      "where": "Top-right progress text once answering has begun. {accuracy} is a percentage, {count} is how many have been answered. The interpunct is part of the design - feel free to change it.",
       "en": "{accuracy}% · {count} done",
       "km": "{accuracy}% · ឆ្លើយបាន {count}"
     },
@@ -194,12 +287,12 @@
       "km": "ត្រឹមត្រូវ"
     },
     "quiz.wrongPickName": {
-      "where": "Feedback after a wrong answer when a photo was shown and the user had to pick the name. {name} is the correct answer, shown in bold at the end of the sentence.",
+      "where": "Feedback after a wrong answer when a picture was shown and the user had to pick the label. {name} is the correct answer, shown in bold at the end of the sentence. Pending native-speaker review.",
       "en": "Not quite — the answer was {name}.",
       "km": "មិនទាន់ត្រូវទេ — ចម្លើយគឺ {name}។"
     },
     "quiz.wrongPickPhoto": {
-      "where": "Feedback after a wrong answer when a name was shown as the prompt and the user had to pick the photo. {name} is already on screen, so this describes the face they mis-picked instead of restating the answer.",
+      "where": "Feedback after a wrong answer when a label was shown as the prompt and the user had to pick the picture. {name} is already on screen, so this describes the picture they mis-picked instead of restating the answer. Pending native-speaker review.",
       "en": "Not quite — that's not {name}.",
       "km": "មិនទាន់ត្រូវទេ — នេះមិនមែន {name} ទេ។"
     },
@@ -209,14 +302,19 @@
       "km": "បន្ទាប់"
     },
     "quiz.prompt": {
-      "where": "Screen-reader description of the question portrait, e.g. `Who is this?`. Never seen visually.",
-      "en": "Who is this?",
-      "km": "នេះជាអ្នកណា?"
+      "where": "Screen-reader description of the question picture, e.g. `What is this?`. Never seen visually. Pending native-speaker review.",
+      "en": "What is this?",
+      "km": "នេះជាអ្វី?"
     },
     "error.saveFailed": {
       "where": "Warning under the Save button when the upload or database write fails. Shown in red.",
       "en": "Could not save that. Please try again.",
       "km": "មិនអាចរក្សាទុកបានទេ។ សូមព្យាយាមម្ដងទៀត។"
+    },
+    "error.authBypass": {
+      "where": "Shown on the add page when VITE_AUTH_BYPASS is on locally, so the user knows saves cannot hit Supabase RLS.",
+      "en": "Local sign-in bypass is on, so saves cannot reach Supabase. Turn off VITE_AUTH_BYPASS and test while signed in on krumath.com.",
+      "km": "កំពុងប្រើការឆ្លងកាត់ចូលក្នុងមូលដ្ឋាន ដូច្នេះមិនអាចរក្សាទុកទៅ Supabase បានទេ។ បិទ VITE_AUTH_BYPASS ហើយសាកល្បងពេលចូលគណនីនៅលើ krumath.com។"
     }
   }
 }

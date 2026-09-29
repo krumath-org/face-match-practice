@@ -14,9 +14,9 @@ export type ServerAuthOutcome =
 /**
  * Resolve the signed-in KruMath user from the request cookies.
  *
- * `unknown` is deliberately distinct from `unauthenticated`: with no session cookie at
- * all the user may still hold a client-side session the server cannot see, so the
- * browser is given the chance to decide rather than being bounced to sign-in.
+ * `unknown` is deliberately distinct from `unauthenticated`: a request can arrive before
+ * the browser has flushed a refreshed session cookie, so absence is not proof. The
+ * browser is given the chance to decide rather than being bounced straight to sign-in.
  *
  * Overrides let request middleware supply the values from the raw `Request` instead of
  * the ambient request context.

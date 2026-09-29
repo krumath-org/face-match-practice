@@ -1,5 +1,8 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
+  // Kept as `kruface` on purpose when the app became KruMemory: the name is internal, and
+  // renaming it would stand up a second Worker that the routes below would have to be
+  // pointed at. Same reasoning for the slug in the routes — the public URL is unchanged.
   "name": "kruface",
   // Pinned rather than left to Nitro's default, which is the build machine's local
   // date and gets rejected by Cloudflare as "in the future" ahead of UTC.
@@ -7,11 +10,11 @@
   "routes": [
     {
       "pattern": "krumath.com/face-match-memorization",
-      "zone_name": "krumath.com"
+      "zone_name": "krumath.com",
     },
     {
       "pattern": "krumath.com/face-match-memorization/*",
-      "zone_name": "krumath.com"
-    }
-  ]
+      "zone_name": "krumath.com",
+    },
+  ],
 }

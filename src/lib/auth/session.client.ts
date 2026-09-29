@@ -31,9 +31,11 @@ export function profileFromUser(user: User): UserProfile {
 }
 
 /**
- * The signed-in user, or null when there is no usable session. Adopts a session left in
- * localStorage first, the same way the gate does, so the menu is populated for users
- * whose session KruMath holds outside cookies.
+ * The signed-in user, or null when there is no usable session.
+ *
+ * The shared session is a cookie (`sb-<ref>-auth-token`, `domain=.krumath.com`). A
+ * browser that still has the pre-cookie `localStorage` copy is migrated once via
+ * `adoptLegacyStoredSession`, so returning visitors are not signed out by the change.
  */
 async function currentUser(): Promise<User | null> {
   const supabase = getSupabaseBrowserClient();

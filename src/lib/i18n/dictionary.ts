@@ -7,6 +7,7 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   km: "ខ្មែរ",
 };
 
+/** `kruface` is kept deliberately: renaming this key would reset every saved choice. */
 export const LOCALE_STORAGE_KEY = "kruface.locale";
 
 const en = {
@@ -17,7 +18,7 @@ const en = {
   "account.settings": "Account settings",
 
   "nav.practice": "Practice",
-  "nav.people": "People",
+  "nav.items": "Items",
   "nav.language": "Language",
 
   "toolbar.home": "KruMath home",
@@ -27,29 +28,48 @@ const en = {
   "home.status.loading": "Loading",
   "home.status.ready": "Ready to practice",
   "home.status.needMore": "{count} more to start",
-  "home.title": "See the face. Remember the name.",
+  "home.title": "See the picture. Remember the name.",
   "home.subtitle":
-    "Good with faces but keep forgetting names? Come on — practice until you never forget a name again.",
+    "Whatever you keep mixing up — faces, words, symbols, formulas — practise until nothing slips away.",
   "home.start": "Start practice",
-  "home.addPeople": "Add people",
+  "home.addItems": "Add items",
   "home.accuracy": "accuracy",
 
-  "people.title": "Your people",
-  "people.count": "{count} faces in your collection",
-  "people.add": "Add person",
-  "people.empty": "Add your first face",
-  "people.remove": "Remove {name}",
+  "collections.label": "Collections",
+  "collections.addFirst": "Add your first item",
+
+  "items.title": "Your items",
+  "items.count": "{count} items in {collection}",
+  "items.add": "Add item",
+  "items.empty": "Add your first item",
+  "items.remove": "Remove {name}",
 
   "add.back": "Back",
   "add.save": "Save",
+  "add.saveAll": "Save all",
   "add.saving": "Saving…",
-  "add.changePhoto": "Change photo",
-  "add.choosePhoto": "Choose a photo",
-  "add.selectedPortrait": "Selected portrait",
-  "add.namePlaceholder": "Name",
+  "add.savingProgress": "Saving {done}/{total}…",
+  "add.changePicture": "Change picture",
+  "add.choosePicture": "Choose a picture",
+  "add.dropHint": "Drop photos here, or click to choose",
+  "add.uploadFolder": "Upload folder",
+  "add.removePending": "Remove",
+  "add.batchTooMany": "Too many photos (max {max}).",
+  "add.batchNone": "No image files found.",
+  "add.batchPartialFailed": "Saved {saved}, but {failed} failed. Fix and try again.",
+  "add.selectedPicture": "Selected picture",
+  "add.namePlaceholder": "Name or label",
+  "add.collectionLabel": "Name list",
+  "add.collectionPlaceholder": "e.g. Team roster or English verb group",
+  "add.collectionNew": "New collection",
+  "add.collectionEdit": "Edit collection",
+  "add.collectionConfirm": "Use this name",
+  "add.collectionCancel": "Cancel",
+  "add.collectionRequired": "Choose a collection, or create one, to save this card.",
+  "add.collectionExisting": "Already exists — this card joins {collection}.",
 
-  "quiz.needMore_one": "Add 1 more person to practice",
-  "quiz.needMore_other": "Add {count} more people to practice",
+  "quiz.needMore_one": "Add 1 more item to practice",
+  "quiz.needMore_other": "Add {count} more items to practice",
   "quiz.back": "Back",
   "quiz.question": "Question {number}",
   "quiz.progress": "{accuracy}% · {count} done",
@@ -57,9 +77,11 @@ const en = {
   "quiz.wrongPickName": "Not quite — the answer was {name}.",
   "quiz.wrongPickPhoto": "Not quite — that's not {name}.",
   "quiz.next": "Next",
-  "quiz.prompt": "Who is this?",
+  "quiz.prompt": "What is this?",
 
   "error.saveFailed": "Could not save that. Please try again.",
+  "error.authBypass":
+    "Local sign-in bypass is on, so saves cannot reach Supabase. Turn off VITE_AUTH_BYPASS and test while signed in on krumath.com.",
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -76,7 +98,7 @@ const km: Record<TranslationKey, string> = {
   "account.settings": "ការកំណត់គណនី",
 
   "nav.practice": "អនុវត្ត",
-  "nav.people": "មនុស្ស",
+  "nav.items": "បញ្ជី",
   "nav.language": "ភាសា",
 
   "toolbar.home": "ទំព័រដើម KruMath",
@@ -86,29 +108,48 @@ const km: Record<TranslationKey, string> = {
   "home.status.loading": "កំពុងផ្ទុក…",
   "home.status.ready": "រួចរាល់ក្នុងការអនុវត្ត",
   "home.status.needMore": "ត្រូវការ {count} ទៀតដើម្បីចាប់ផ្ដើម",
-  "home.title": "មើលមុខ ចាំឈ្មោះ",
+  "home.title": "មើលរូបភាព ចាំឈ្មោះ",
   "home.subtitle":
-    "ពូកែចាំមុខ តែភ្លេចឈ្មោះមែន? តស់! ហ្វឹកហាត់មើលមុខ ចាំឈ្មោះ កុំឱ្យភ្លេចឈ្មោះគេទៀត។",
+    "អ្វីៗដែលអ្នកច្រើនច្រឡំ — មុខមនុស្ស ពាក្យថ្មី សញ្ញា រូបមន្ត — ហ្វឹកហាត់រហូតដល់មិនភ្លេចទៀត។",
   "home.start": "ចាប់ផ្ដើមអនុវត្ត",
-  "home.addPeople": "បន្ថែមមនុស្ស",
+  "home.addItems": "បន្ថែមរបស់",
   "home.accuracy": "ភាពត្រឹមត្រូវ",
 
-  "people.title": "បញ្ជីមនុស្សរបស់អ្នក",
-  "people.count": "មាន {count} នាក់ក្នុងបញ្ជីរបស់អ្នក",
-  "people.add": "បន្ថែមមនុស្ស",
-  "people.empty": "បន្ថែមមនុស្សដំបូងរបស់អ្នក",
-  "people.remove": "លុប {name}",
+  "collections.label": "បញ្ជី",
+  "collections.addFirst": "បន្ថែមរបស់ដំបូងរបស់អ្នក",
 
-  "add.back": "ត្រឡប់ក្រោយ",
+  "items.title": "បញ្ជីរបស់អ្នក",
+  "items.count": "មាន {count} ក្នុង {collection}",
+  "items.add": "បន្ថែមរបស់",
+  "items.empty": "បន្ថែមរបស់ដំបូងរបស់អ្នក",
+  "items.remove": "លុប {name}",
+
+  "add.back": "ត្រលប់ក្រោយ",
   "add.save": "រក្សាទុក",
+  "add.saveAll": "រក្សាទុកទាំងអស់",
   "add.saving": "កំពុងរក្សាទុក…",
-  "add.changePhoto": "ប្ដូររូបថត",
-  "add.choosePhoto": "ជ្រើសរើសរូបថត",
-  "add.selectedPortrait": "រូបថតដែលបានជ្រើសរើស",
-  "add.namePlaceholder": "ឈ្មោះ",
+  "add.savingProgress": "កំពុងរក្សាទុក {done}/{total}…",
+  "add.changePicture": "ប្ដូររូបភាព",
+  "add.choosePicture": "ជ្រើសរើសរូបភាព",
+  "add.dropHint": "ទាញរូបភាពមកទីនេះ ឬចុចដើម្បីជ្រើស",
+  "add.uploadFolder": "ផ្ទុកថតឯកសារ",
+  "add.removePending": "លុប",
+  "add.batchTooMany": "រូបភាពច្រើនពេក (អតិបរមា {max})។",
+  "add.batchNone": "រកមិនឃើញឯកសាររូបភាព។",
+  "add.batchPartialFailed": "រក្សាទុកបាន {saved} ប៉ុន្តែ {failed} បរាជ័យ។ សូមកែហើយព្យាយាមម្ដងទៀត។",
+  "add.selectedPicture": "រូបភាពដែលបានជ្រើសរើស",
+  "add.namePlaceholder": "ឈ្មោះ ឬស្លាក",
+  "add.collectionLabel": "បញ្ជីឈ្មោះ",
+  "add.collectionPlaceholder": "ឧទាហរណ៍៖ បញ្ជីឈ្មោះក្រុមការងារ ឬ ក្រុមពាក្យកិរិយាអង់គ្លេស",
+  "add.collectionNew": "បញ្ជីថ្មី",
+  "add.collectionEdit": "កែបញ្ជី",
+  "add.collectionConfirm": "ប្រើឈ្មោះនេះ",
+  "add.collectionCancel": "បោះបង់",
+  "add.collectionRequired": "សូមជ្រើសរើសបញ្ជី ឬបង្កើតបញ្ជីថ្មី ដើម្បីរក្សាទុករបស់នេះ។",
+  "add.collectionExisting": "បញ្ជីនេះមានរួចហើយ — របស់នេះនឹងចូលក្នុង {collection}។",
 
-  "quiz.needMore_one": "បន្ថែម {count} នាក់ទៀតដើម្បីអនុវត្ត",
-  "quiz.needMore_other": "បន្ថែម {count} នាក់ទៀតដើម្បីអនុវត្ត",
+  "quiz.needMore_one": "បន្ថែម {count} ទៀតដើម្បីអនុវត្ត",
+  "quiz.needMore_other": "បន្ថែម {count} ទៀតដើម្បីអនុវត្ត",
   "quiz.back": "ត្រឡប់ក្រោយ",
   "quiz.question": "សំណួរទី {number}",
   "quiz.progress": "{accuracy}% · ឆ្លើយបាន {count}",
@@ -116,9 +157,11 @@ const km: Record<TranslationKey, string> = {
   "quiz.wrongPickName": "មិនទាន់ត្រូវទេ — ចម្លើយគឺ {name}។",
   "quiz.wrongPickPhoto": "មិនទាន់ត្រូវទេ — នេះមិនមែន {name} ទេ។",
   "quiz.next": "បន្ទាប់",
-  "quiz.prompt": "នេះជាអ្នកណា?",
+  "quiz.prompt": "នេះជាអ្វី?",
 
   "error.saveFailed": "មិនអាចរក្សាទុកបានទេ។ សូមព្យាយាមម្ដងទៀត។",
+  "error.authBypass":
+    "កំពុងប្រើការឆ្លងកាត់ចូលក្នុងមូលដ្ឋាន ដូច្នេះមិនអាចរក្សាទុកទៅ Supabase បានទេ។ បិទ VITE_AUTH_BYPASS ហើយសាកល្បងពេលចូលគណនីនៅលើ krumath.com។",
 };
 
 export const dictionaries: Record<Locale, Record<TranslationKey, string>> = { en, km };

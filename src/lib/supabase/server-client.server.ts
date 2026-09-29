@@ -2,9 +2,19 @@ import "@tanstack/react-start/server-only";
 
 import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getRequestHeader, setCookie } from "@tanstack/react-start/server";
+import { getRequestHeader, getRequestUrl, setCookie } from "@tanstack/react-start/server";
 
 import { AUTH_STORAGE_KEY, isSupabaseConfigured, SUPABASE_ANON_KEY, SUPABASE_URL } from "./config";
+import { getKrumathSupabaseCookieOptions, mergeKrumathCookieOptions } from "./krumathCookies";
+
+/** Hostname of the current request, for choosing the shared cookie domain. */
+function requestHostname(): string | undefined {
+  try {
+    return new URL(getRequestUrl()).hostname;
+  } catch {
+    return undefined;
+  }
+}
 
 /** Minimal RFC 6265 cookie header parser; only name/value pairs are needed. */
 function parseCookieHeader(header: string): Array<{ name: string; value: string }> {
@@ -37,7 +47,10 @@ function parseCookieHeader(header: string): Array<{ name: string; value: string 
 export function getSupabaseServerClient(cookieHeader?: string): SupabaseClient | null {
   if (!isSupabaseConfigured()) return null;
 
+  const hostname = requestHostname();
+
   return createServerClient(SUPABASE_URL as string, SUPABASE_ANON_KEY as string, {
+    cookieOptions: getKrumathSupabaseCookieOptions(hostname),
     cookies: {
       getAll() {
         return parseCookieHeader(cookieHeader ?? getRequestHeader("cookie") ?? "");
@@ -45,7 +58,13 @@ export function getSupabaseServerClient(cookieHeader?: string): SupabaseClient |
       setAll(cookies) {
         for (const cookie of cookies) {
           try {
-            setCookie(cookie.name, cookie.value, cookie.options as never);
+            // Same shared domain as the browser client, so a refresh that happens here
+            // rewrites the one cookie family instead of creating a host-only duplicate.
+            setCookie(
+              cookie.name,
+              cookie.value,
+              mergeKrumathCookieOptions(cookie.options ?? {}, hostname) as never,
+            );
           } catch {
             // Response headers already flushed; the browser client refreshes instead.
           }

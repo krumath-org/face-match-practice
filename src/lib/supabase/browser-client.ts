@@ -2,13 +2,18 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { AUTH_STORAGE_KEY, isSupabaseConfigured, SUPABASE_ANON_KEY, SUPABASE_URL } from "./config";
+import { getKrumathSupabaseCookieOptions } from "./krumathCookies";
 
 let cached: SupabaseClient | undefined;
 
 /**
- * Browser client on the existing KruMath project. Running on the same origin as
- * krumath.com means it reads and writes the same session storage, so signing in on
- * either side is visible to the other.
+ * Browser client on the existing KruMath project.
+ *
+ * The session lives in `@supabase/ssr` cookies (`sb-<projectRef>-auth-token…`) at
+ * `path=/` with `domain=.krumath.com` — the same store KruMath's main app writes and the
+ * same store this Worker's server client reads. The explicit cookie options matter:
+ * `@supabase/ssr` defaults have no `domain`, which would create a host-only cookie
+ * alongside KruMath's shared one and make the two disagree about who is signed in.
  */
 export function getSupabaseBrowserClient(): SupabaseClient {
   if (!isSupabaseConfigured()) {
@@ -16,14 +21,23 @@ export function getSupabaseBrowserClient(): SupabaseClient {
       "Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
     );
   }
-  cached ??= createBrowserClient(SUPABASE_URL as string, SUPABASE_ANON_KEY as string);
+  if (cached) return cached;
+
+  cached = createBrowserClient(SUPABASE_URL as string, SUPABASE_ANON_KEY as string, {
+    cookieOptions: getKrumathSupabaseCookieOptions(
+      typeof window !== "undefined" ? window.location.hostname : undefined,
+      typeof window !== "undefined" ? window.location.protocol === "https:" : true,
+    ),
+    isSingleton: false,
+    auth: { detectSessionInUrl: false },
+  });
   return cached;
 }
 
 /**
- * KruMath may hold its session with a plain supabase-js client, which writes to
- * localStorage rather than cookies. When that is the case there is no cookie for the
- * server to read, so adopt the stored session before concluding the user is signed out.
+ * Transition helper for browsers that still hold the pre-cookie session in
+ * `localStorage` under `sb-<ref>-auth-token`. KruMath no longer writes there, but a
+ * returning visitor may still have it; adopting it once migrates them onto the cookie.
  */
 export async function adoptLegacyStoredSession(client: SupabaseClient): Promise<boolean> {
   if (!AUTH_STORAGE_KEY || typeof window === "undefined") return false;

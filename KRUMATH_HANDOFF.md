@@ -3,6 +3,13 @@
 A prompt for whoever owns the krumath.com codebase. This is the only work needed on the
 KruMath side; nothing in this repository changes KruMath's auth or sign-in.
 
+> **Note on the rename.** The tool was originally KruFace and is now **KruMemory**,
+> covering any picture-and-label pair rather than only faces. Nothing on the KruMath side
+> changes because of it: the public path `krumath.com/face-match-memorization` is
+> deliberately unchanged, and so is the hard gate described below. Only the app's own
+> wordmark and its internal routes moved (`/people` → `/items`), so when the entry link is
+> eventually added, label it **KruMemory**.
+
 ---
 
 ## Prompt
@@ -26,7 +33,7 @@ KruMath side; nothing in this repository changes KruMath's auth or sign-in.
 >   anything not on `krumath.com`). Without the allowlist this is an open redirect.
 >
 > After login the user should land back on the tool route they asked for, e.g.
-> `/face-match-memorization/people`, not on `/home`.
+> `/face-match-memorization/items`, not on `/home`.
 >
 > **2. Make sure auth cookies are readable at the subpath.** The tool runs at
 > `/face-match-memorization/*` on `krumath.com`, and its server reads the session cookie to
@@ -70,9 +77,9 @@ KruMath side; nothing in this repository changes KruMath's auth or sign-in.
 
 ## Verification
 
-1. Signed out, open `krumath.com/face-match-memorization/people` → lands on
-   `/sign-in?returnUrl=/face-match-memorization/people`.
-2. Sign in → lands on `/face-match-memorization/people`.
+1. Signed out, open `krumath.com/face-match-memorization/items` → lands on
+   `/sign-in?returnUrl=/face-match-memorization/items`.
+2. Sign in → lands on `/face-match-memorization/items`.
 3. `?returnUrl=https://example.com` and `?returnUrl=//example.com` → must **not** navigate
    off-site.
 4. Sign out on krumath.com, then open `/face-match-memorization` → blocked again.
